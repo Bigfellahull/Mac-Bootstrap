@@ -1,0 +1,93 @@
+# Architecture
+
+## Machine roles
+
+```text
+MacBook Air
+  apps / DataGrip / Zed / Ghostty / Starship / Tailscale
+                   |
+                   | SSH and database tunnels
+                   v
+work-mini or personal-mini
+  macOS / Tailscale / Remote Login / OrbStack
+                   |
+                   v
+work-dev or personal-dev
+  source / SDKs / CLIs / development processes
+```
+
+The macOS machines are durable and the Ubuntu machines are disposable. Host
+bootstrap therefore installs and verifies expected state but does not delete
+unexpected applications. Profile changes must not be used as an uninstaller.
+
+## OrbStack Docker API bridge
+
+The work VM uses SSH Unix-socket forwarding when a development process needs
+direct access to the Docker API:
+
+```text
+Ubuntu process
+  -> user-owned runtime socket in Ubuntu
+  -> encrypted SSH forwarding
+  -> ~/.orbstack/run/docker.sock on the work mini
+  -> OrbStack container
+
+Container callback
+  -> docker.orb.internal:<published port>
+  -> OrbStack container
+```
+
+No Docker daemon or container runs in the Ubuntu VM, and no Docker TCP port or
+guest `/var/run/docker.sock` link is created. The host owns OrbStack and SSH
+authorization, `dev-machine` owns the user-level tunnel service, and each
+project owns any consumer-specific environment variables.
+
+The bridge implementation is generic rather than Testcontainers-specific.
+Testcontainers is one consumer; Docker SDKs and IDE integrations may use the
+same API path. The personal mini supports the same design but leaves it disabled
+until a workload requires it.
+
+## Local development TLS
+
+Each mini is the sole issuer for its matching VM's local development
+certificate. The mini stores a profile-specific CA private key, trusts the
+public root in macOS and exports only the public root plus a reusable leaf
+certificate and key. `dev-machine` installs those files into stable VM paths and
+creates the password-protected PFX used by .NET.
+
+Browser clients trust only the public root. A browser on the issuing mini uses
+the system trust installed during commissioning; a browser on the Air needs an
+explicit public-root import for each profile it accesses. Projects select PEM
+or PFX files through command-scoped wrappers and never manage the CA.
+
+## Installation managers
+
+Homebrew Bundle owns formulae and casks declared in `config/Brewfile.*`. The
+Mac App Store CLI installs the small set of Air applications available only
+through the store.
+
+Homebrew and the Mac App Store are the only application managers. Vendor
+updaters may update their applications after installation, but the bootstrap
+does not introduce additional package-manager stacks.
+
+## Application configuration
+
+The Air profile installs Starship and development VM SSH and tmux helpers for
+zsh sessions and loads managed Ghostty preferences from a dedicated fragment
+referenced by `~/.config/ghostty/config`. The fragment selects Catppuccin
+light/dark themes and SSH environment and terminfo integration. Existing
+configuration outside that fragment is preserved. Other application
+authentication, licences and permissions stay interactive.
+
+## Security boundary
+
+The repository contains application names, public App Store IDs, settings
+policy and non-secret authorization policy only. It never contains Apple,
+Tailscale, VPN, 1Password, JetBrains, Parallels, SSH private keys or database
+credentials. Work and personal bridge credentials and runtime sockets must
+remain separate. Their local development CA keys, leaf keys and VM TLS state
+must also remain separate.
+
+ExpressVPN and Tailscale coexistence must be tested during commissioning on
+each profile. The bootstrap installs both applications but does not alter VPN
+routing, split-tunnel or kill-switch settings.

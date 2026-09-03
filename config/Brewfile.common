@@ -1,0 +1,4 @@
+cask "1password"
+cask "cleanmymac"
+cask "expressvpn"
+cask "tailscale-app"

@@ -1,0 +1,91 @@
+#!/usr/bin/env bash
+
+set -Eeuo pipefail
+
+MAC_BOOTSTRAP_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+
+# shellcheck source=bootstrap/lib.sh
+source "$MAC_BOOTSTRAP_ROOT/bootstrap/lib.sh"
+
+usage() {
+  cat <<'EOF'
+Usage:
+  bin/mac list
+  bin/mac plan <profile>
+  bin/mac apply <profile> [--skip-app-store]
+  bin/mac verify <profile> [--skip-app-store]
+
+Profiles:
+  air
+  personal-mini
+  work-mini
+EOF
+}
+
+require_profile() {
+  [[ $# -ge 1 ]] || {
+    usage >&2
+    exit 1
+  }
+}
+
+apply_profile() {
+  local profile="$1"
+  local option="${2:-}"
+
+  [[ -z "$option" || "$option" == "--skip-app-store" ]] || {
+    usage >&2
+    exit 1
+  }
+
+  load_profile "$profile"
+  "$MAC_BOOTSTRAP_ROOT/bootstrap/homebrew.sh"
+  "$MAC_BOOTSTRAP_ROOT/bootstrap/applications.sh" "$profile"
+  "$MAC_BOOTSTRAP_ROOT/bootstrap/ghostty.sh" apply "$profile"
+  "$MAC_BOOTSTRAP_ROOT/bootstrap/starship.sh" apply "$profile"
+
+  if [[ "$option" != "--skip-app-store" ]]; then
+    "$MAC_BOOTSTRAP_ROOT/bootstrap/app-store.sh" "$profile"
+  fi
+
+  printf '\nInstallation finished. Complete the profile checklist in docs/commissioning.md, then run:\n'
+  printf '  bin/mac verify %s\n' "$profile"
+}
+
+main() {
+  local command="${1:-}"
+
+  case "$command" in
+    list)
+      [[ $# -eq 1 ]] || { usage >&2; exit 1; }
+      list_profiles
+      ;;
+    plan)
+      shift
+      require_profile "$@"
+      [[ $# -eq 1 ]] || { usage >&2; exit 1; }
+      "$MAC_BOOTSTRAP_ROOT/bootstrap/plan.sh" "$1"
+      ;;
+    apply)
+      shift
+      require_profile "$@"
+      [[ $# -le 2 ]] || { usage >&2; exit 1; }
+      apply_profile "$@"
+      ;;
+    verify)
+      shift
+      require_profile "$@"
+      [[ $# -le 2 ]] || { usage >&2; exit 1; }
+      "$MAC_BOOTSTRAP_ROOT/bootstrap/verify.sh" "$@"
+      ;;
+    help|-h|--help)
+      usage
+      ;;
+    *)
+      usage >&2
+      exit 1
+      ;;
+  esac
+}
+
+main "$@"
