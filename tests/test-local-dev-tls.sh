@@ -27,12 +27,16 @@ issue_test_certificate() {
   local request="$test_directory/leaf-request.pem"
   local sans="$4"
 
-  printf '%s\n' \
-    '[leaf]' \
-    "basicConstraints=critical,CA:$ca_value" \
-    'keyUsage=critical,digitalSignature,keyEncipherment' \
-    'extendedKeyUsage=serverAuth' \
-    "subjectAltName=$sans" > "$extensions"
+  {
+    printf '%s\n' '[leaf]'
+    if [[ -n "$ca_value" ]]; then
+      printf 'basicConstraints=critical,CA:%s\n' "$ca_value"
+    fi
+    printf '%s\n' \
+      'keyUsage=critical,digitalSignature,keyEncipherment' \
+      'extendedKeyUsage=serverAuth' \
+      "subjectAltName=$sans"
+  } > "$extensions"
   /usr/bin/openssl req -new -key "$private_key" -out "$request" \
     -subj /CN=localhost >/dev/null 2>&1
   /usr/bin/openssl x509 -req -in "$request" \
@@ -108,15 +112,13 @@ main() {
     -addext keyUsage=critical,keyCertSign,cRLSign >/dev/null 2>&1
   chmod 400 "$ca_root/rootCA-key.pem"
   chmod 644 "$ca_root/rootCA.pem"
-  install -m 0644 "$ca_root/rootCA.pem" "$bundle_directory/root-ca.pem"
-  /usr/bin/openssl genrsa -out "$bundle_directory/localhost-key.pem" 2048 >/dev/null 2>&1
-  chmod 600 "$bundle_directory/localhost-key.pem"
+
+  issue_material
+  replace_bundle
+  /usr/bin/openssl x509 -in "$bundle_directory/localhost.pem" -noout -text \
+    | grep -Fq 'CA:FALSE' || fail "issued leaf certificate lacks CA:FALSE"
+
   expected_sans='DNS:localhost,IP:127.0.0.1,IP:::1,DNS:dev.localhost,DNS:*.dev.localhost'
-  issue_test_certificate "$bundle_directory/localhost-key.pem" \
-    "$bundle_directory/localhost.pem" FALSE "$expected_sans"
-  chmod 644 "$bundle_directory/localhost.pem"
-  printf '%s\n' work > "$bundle_directory/profile"
-  chmod 644 "$bundle_directory/profile"
 
   verify_ca_state || fail "valid test CA state was rejected"
   verify_material_directory "$bundle_directory" work \
@@ -132,6 +134,12 @@ main() {
     "$bundle_directory/localhost.pem" FALSE "$expected_sans,DNS:example.com"
   if verify_material_directory "$bundle_directory" work; then
     fail "leaf certificate with an extra DNS identity was accepted"
+  fi
+
+  issue_test_certificate "$bundle_directory/localhost-key.pem" \
+    "$bundle_directory/localhost.pem" '' "$expected_sans"
+  if verify_material_directory "$bundle_directory" work; then
+    fail "leaf certificate without an explicit CA constraint was accepted"
   fi
 
   issue_test_certificate "$bundle_directory/localhost-key.pem" \

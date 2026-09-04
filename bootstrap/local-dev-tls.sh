@@ -217,13 +217,36 @@ initialize_ca() {
 }
 
 issue_material() {
+  local certificate_request
+  local extensions
+  local serial
+
   temporary_directory="$(mktemp -d "$tls_state_root/.bundle.XXXXXX")"
   chmod 700 "$temporary_directory"
+  certificate_request="$temporary_directory/localhost.csr"
+  extensions="$temporary_directory/leaf-extensions.cnf"
+  serial="$(/usr/bin/openssl rand -hex 16)"
 
-  CAROOT="$ca_root" mkcert \
-    -cert-file "$temporary_directory/localhost.pem" \
-    -key-file "$temporary_directory/localhost-key.pem" \
-    localhost 127.0.0.1 ::1 dev.localhost '*.dev.localhost'
+  /usr/bin/openssl genrsa -out "$temporary_directory/localhost-key.pem" 2048 \
+    >/dev/null 2>&1
+  chmod 0600 "$temporary_directory/localhost-key.pem"
+  /usr/bin/openssl req -new \
+    -key "$temporary_directory/localhost-key.pem" \
+    -out "$certificate_request" -subj /CN=localhost >/dev/null 2>&1
+  printf '%s\n' \
+    '[leaf]' \
+    'basicConstraints=critical,CA:FALSE' \
+    'keyUsage=critical,digitalSignature,keyEncipherment' \
+    'extendedKeyUsage=serverAuth' \
+    'subjectAltName=DNS:localhost,DNS:dev.localhost,DNS:*.dev.localhost,IP:127.0.0.1,IP:::1' \
+    > "$extensions"
+  /usr/bin/openssl x509 -req -in "$certificate_request" \
+    -CA "$ca_root/rootCA.pem" -CAkey "$ca_root/rootCA-key.pem" \
+    -set_serial "0x$serial" -days 825 -sha256 \
+    -extfile "$extensions" -extensions leaf \
+    -out "$temporary_directory/localhost.pem" >/dev/null 2>&1
+  rm -f "$certificate_request" "$extensions"
+  chmod 0644 "$temporary_directory/localhost.pem"
   install -m 0644 "$ca_root/rootCA.pem" "$temporary_directory/root-ca.pem"
   printf '%s\n' "$vm_profile" >"$temporary_directory/profile"
   chmod 0644 "$temporary_directory/profile"
