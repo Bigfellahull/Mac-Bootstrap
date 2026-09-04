@@ -4,7 +4,7 @@
 
 ```text
 MacBook Air
-  apps / DataGrip / Zed / Ghostty / Starship / Tailscale
+  apps / DataGrip / Zed / Ghostty / shell tools / Tailscale
                    |
                    | SSH and database tunnels
                    v
@@ -72,12 +72,15 @@ does not introduce additional package-manager stacks.
 
 ## Application configuration
 
-The Air profile installs Starship and development VM SSH and tmux helpers for
-zsh sessions and loads managed Ghostty preferences from a dedicated fragment
-referenced by `~/.config/ghostty/config`. The fragment selects Catppuccin
-light/dark themes and SSH environment and terminfo integration. Existing
-configuration outside that fragment is preserved. Other application
-authentication, licences and permissions stay interactive.
+The Air profile installs Starship, fzf, zoxide, fd, ripgrep, bat, zsh
+autosuggestions and zsh syntax highlighting. Its managed zsh fragment enables
+fzf key bindings and completion, zoxide navigation, bat previews and the two
+zsh enhancements alongside development VM SSH and tmux helpers. Managed
+Ghostty preferences come from a dedicated fragment referenced by
+`~/.config/ghostty/config`; it selects Catppuccin light/dark themes and SSH
+environment and terminfo integration. Existing configuration outside managed
+fragments is preserved. Other application authentication, licences and
+permissions stay interactive.
 
 ## Security boundary
 

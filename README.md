@@ -30,6 +30,13 @@ The Air receives the common applications plus:
 - Rectangle
 - SideNotes
 - Starship
+- bat
+- fd
+- fzf
+- ripgrep
+- zoxide
+- zsh-autosuggestions
+- zsh-syntax-highlighting
 - Windows App
 - Zed
 
@@ -94,7 +101,8 @@ state without changing it. None of these commands copies user data.
 
 ## Boundaries
 
-- Air: graphical client applications, SSH, Tailscale, Zed, Ghostty and Starship.
+- Air: graphical client applications, SSH, Tailscale, Zed, Ghostty, Starship and
+  focused command-line shell tools.
 - Minis: Tailscale, Remote Login and OrbStack.
 - Work mini: an SSH-forwarded OrbStack Docker API bridge, commissioned with a
   dedicated VM key.
@@ -134,11 +142,11 @@ command-scoped wrappers; they do not establish trust themselves. See
 
 The bootstrap manages only explicitly declared macOS settings. The Air profile
 manages Ghostty's Catppuccin light/dark preferences, SSH environment and
-terminfo integration, plus a shared Starship prompt and development VM helpers
-for local zsh sessions. Remote Bash and tmux prompt configuration belongs to
-`dev-machine`. Dock, Finder, keyboard, trackpad, screenshot, power and Remote
-Login settings remain operator-controlled as described in
-[`docs/settings.md`](docs/settings.md).
+terminfo integration, plus a shared Starship prompt, focused zsh enhancements
+and development VM helpers for local sessions. Remote Bash and tmux prompt
+configuration belongs to `dev-machine`. Dock, Finder, keyboard, trackpad,
+screenshot, power and Remote Login settings remain operator-controlled as
+described in [`docs/settings.md`](docs/settings.md).
 
 ## Documentation
 
