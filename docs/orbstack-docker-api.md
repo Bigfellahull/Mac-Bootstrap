@@ -9,6 +9,10 @@ The work-mini profile enables the host prerequisites. The personal-mini profile
 supports the same mechanism but leaves it disabled until a personal workload
 needs direct API access.
 
+The supplied `dev-machine` guest helper and service support work only. Personal
+use would require guest support as well as a reviewed host-profile change; leave
+it disabled with the supplied profiles.
+
 ## Ownership
 
 `mac-bootstrap` owns and verifies:
@@ -37,7 +41,10 @@ stat -f 'owner=%Su mode=%Lp path=%N' "$HOME/.orbstack/run/docker.sock"
 ```
 
 Generate the dedicated key in the VM, not on the Mac. Use a distinct key for
-every VM-to-Mac pairing. Transfer only its public key and append it manually to
+every VM-to-Mac pairing. Follow the `dev-machine`
+[guest commissioning commands](https://github.com/Bigfellahull/Dev-Machine/blob/main/docs/docker-api.md#commissioning)
+to initialise the key and, after host authorisation, start and verify the
+service. Transfer only its public key and append it manually to
 the matching Mac user's `~/.ssh/authorized_keys` with this shape:
 
 ```text
@@ -68,7 +75,10 @@ The verifier requires a real, non-symlinked OrbStack socket owned by the Mac
 user and not writable by group or others. It also requires the matching
 authorization marker with `restrict`, `port-forwarding`, and a forced
 `/usr/bin/false` command, without re-enabling PTY, agent, X11 or user-rc access.
-The marked key must be valid and unique in `authorized_keys`; a disabled mini
+Exactly one entry may carry the profile's marker, and that key must not appear
+elsewhere in `authorized_keys`. The supplied policy therefore commissions one
+VM bridge per mini. A work clone needs a deliberate authorisation handover;
+concurrent VM bridge keys require a separate host-policy change. A disabled mini
 profile requires its authorization marker to be absent. Either profile rejects
 an authorization marker belonging to the other mini.
 

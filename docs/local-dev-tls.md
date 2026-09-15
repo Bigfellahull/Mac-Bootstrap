@@ -80,7 +80,8 @@ bin/local-dev-tls export work-mini /private/tmp/work-local-dev-tls
 ```
 
 Transfer that directory only to the matching VM through an authenticated local
-channel, then run the `dev-machine` importer inside Ubuntu. The export contains
+channel, then run the `dev-machine` [importer inside Ubuntu](https://github.com/Bigfellahull/Dev-Machine/blob/main/docs/local-dev-tls.md#import).
+Create and provision the VM before this transfer. The export contains
 the public root and the leaf private key, but never the CA private key. Remove
 the exact handoff directory from both ends after a successful import.
 
@@ -95,6 +96,11 @@ store. A browser on another Mac, such as the Air connecting through an SSH port
 forward, also needs that profile's **public** `root-ca.pem` imported and trusted
 explicitly. Use Keychain Access during commissioning; do not copy the CA
 private key or leaf private key to a browser-only client.
+
+Use an [Air SSH port forward](remote-access.md#browser-access-to-vm-services)
+to reach a VM service. Start with `https://localhost:PORT`; custom virtual-host
+names also need to resolve to the client's loopback address. Installing a root
+certificate does not configure DNS or forward ports.
 
 Firefox can use its own certificate database depending on its configuration.
 If it does not use macOS system roots, import only `root-ca.pem` through

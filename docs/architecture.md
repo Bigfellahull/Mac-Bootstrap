@@ -20,6 +20,19 @@ The macOS machines are durable and the Ubuntu machines are disposable. Host
 bootstrap therefore installs and verifies expected state but does not delete
 unexpected applications. Profile changes must not be used as an uninstaller.
 
+## Air SSH routing
+
+This repository owns the Air's SSH aliases, jump-host routing and macOS access
+commissioning. Both local and remote access use the minis' full Tailscale DNS
+names. The Air connects through each mini's Remote Login service to its local
+OrbStack SSH endpoint. Work and personal use distinct Air keys and VM host-key
+aliases. Local settings supply usernames and Tailscale names; they are never
+committed. See [Air SSH access](remote-access.md).
+
+`dev-machine` owns the corresponding Ubuntu machine names, Linux users and
+development environment. Its remote-access guide consumes the aliases defined
+here.
+
 ## OrbStack Docker API bridge
 
 The work VM uses SSH Unix-socket forwarding when a development process needs

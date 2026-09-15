@@ -58,11 +58,13 @@ main() {
   assert_contains "$air" 'theme = dark:Catppuccin Frappe,light:Catppuccin Latte'
   assert_contains "$air" 'Managed Starship and zsh configuration:'
   assert_contains "$air" 'work-dev() {'
-  assert_contains "$air" "ssh -t work-dev@orb $tmux_session_command"
+  assert_contains "$air" "ssh -t work-dev $tmux_session_command"
   assert_contains "$air" 'personal-dev() {'
-  assert_contains "$air" "ssh -t personal-dev@orb $tmux_session_command"
-  assert_contains "$air" 'alias work-devs='"'"'ssh work-dev@orb "tmux ls"'"'"''
-  assert_contains "$air" 'alias personal-devs='"'"'ssh personal-dev@orb "tmux ls"'"'"''
+  assert_contains "$air" "ssh -t personal-dev $tmux_session_command"
+  assert_contains "$air" 'alias work-devs='"'"'ssh work-dev "tmux ls"'"'"''
+  assert_contains "$air" 'alias personal-devs='"'"'ssh personal-dev "tmux ls"'"'"''
+  assert_contains "$air" 'Managed Air SSH routing:'
+  assert_contains "$air" 'using Tailscale everywhere'
   assert_not_contains "$air" 'recordly'
   assert_not_contains "$air" 'orbstack'
   assert_not_contains "$air" 'OrbStack Docker API bridge'

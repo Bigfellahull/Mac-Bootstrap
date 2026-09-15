@@ -39,6 +39,7 @@ main() {
   print_tsv "Mac App Store" "$MAC_APP_STORE_FILE"
   "$MAC_BOOTSTRAP_ROOT/bootstrap/ghostty.sh" plan "$profile"
   "$MAC_BOOTSTRAP_ROOT/bootstrap/starship.sh" plan "$profile"
+  "$MAC_BOOTSTRAP_ROOT/bootstrap/ssh.sh" plan "$profile"
   "$MAC_BOOTSTRAP_ROOT/bootstrap/orbstack-docker-api.sh" plan "$profile"
   "$MAC_BOOTSTRAP_ROOT/bin/local-dev-tls" plan "$profile"
 

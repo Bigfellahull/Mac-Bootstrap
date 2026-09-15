@@ -63,7 +63,7 @@ main() {
     source "$HOME/.config/mac-bootstrap/air.zsh"
     work-dev "feature branch"
   ')"
-  [[ "$actual" == $'-t\nwork-dev@orb\ntmux new -As feature\\ branch' ]] || \
+  [[ "$actual" == $'-t\nwork-dev\ntmux new -As feature\\ branch' ]] || \
     fail "work development VM function did not quote the requested session"
 
   actual="$(HOME="$new_home" zsh -fc '
@@ -71,7 +71,7 @@ main() {
     source "$HOME/.config/mac-bootstrap/air.zsh"
     personal-dev
   ')"
-  [[ "$actual" == $'-t\npersonal-dev@orb\ntmux new -As dev' ]] || \
+  [[ "$actual" == $'-t\npersonal-dev\ntmux new -As dev' ]] || \
     fail "personal development VM function did not use the default session"
 
   actual="$(HOME="$new_home" zsh -fc '
@@ -80,7 +80,7 @@ main() {
     eval work-devs
     eval personal-devs
   ')"
-  [[ "$actual" == $'work-dev@orb\ntmux ls\npersonal-dev@orb\ntmux ls' ]] || \
+  [[ "$actual" == $'work-dev\ntmux ls\npersonal-dev\ntmux ls' ]] || \
     fail "development VM session-list aliases are incorrect"
 
   existing_home="$test_directory/existing-home"

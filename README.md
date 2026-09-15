@@ -7,6 +7,24 @@ up as new machines rather than restored from a Time Machine system image.
 Project repositories, SDKs, databases and AI coding CLIs do not live here.
 They belong in the disposable Ubuntu machines managed by `dev-machine`.
 
+## Start here
+
+Follow the [commissioning guide](docs/commissioning.md) for the complete order
+of work, including the manual steps before and after installation. Start with
+the minis before commissioning the Air connections; Air application installation
+can run independently.
+
+| Stage | Required action |
+|---|---|
+| Before scripts | macOS setup, FileVault, Command Line Tools, Homebrew and the Air App Store sign-in |
+| Installation | Run the selected profile as the normal macOS user |
+| After scripts, all Macs | App sign-ins, licences, privacy/network permissions and VPN checks |
+| After scripts, minis | Remote Login, OrbStack, local TLS CA, Ubuntu provisioning and the work Docker API bridge |
+| After scripts, Air | Local SSH settings, separate keys, host trust, browser CA trust and client connections |
+| Final checks | Run the profile verifier, resolve commissioning warnings and test real connections |
+
+`apply` finishing successfully does not mean commissioning is complete.
+
 ## Profiles
 
 ### Air
@@ -75,14 +93,20 @@ xcode-select --install
 ```
 
 Install Homebrew from its official instructions at <https://brew.sh>. Both are
-explicit prerequisites so bootstrap never initiates an interactive toolchain or
-administrator-authentication flow.
+explicit prerequisites; bootstrap checks for them rather than installing them.
+Run bootstrap as the normal macOS user, not with `sudo`. Homebrew cask package
+installers may still request administrator approval during installation.
 
 Then run the appropriate profile:
 
 ```bash
 bin/mac plan air
 bin/mac apply air
+```
+
+Complete the applicable manual steps in the [commissioning guide](docs/commissioning.md), then run:
+
+```bash
 bin/mac verify air
 ```
 
@@ -95,9 +119,13 @@ bin/mac apply air --skip-app-store
 bin/mac verify air --skip-app-store
 ```
 
-`plan` is read-only. `apply` installs missing applications but never runs
-Homebrew cleanup and never uninstalls an application. `verify` reports missing
-state without changing it. None of these commands copies user data.
+`plan` is read-only. `apply` installs missing applications and updates managed
+Air configuration. It does not uninstall applications or request bundle cleanup;
+Homebrew can still perform its normal dependency and cache maintenance.
+`verify` reports missing state without changing it. None of these commands copies user data. Before
+commissioning, missing Air SSH settings, mini TLS state and the work bridge can
+cause verification to fail. `--skip-app-store` skips only App Store checks; rerun
+without it after completing those installations.
 
 ## Boundaries
 
@@ -115,6 +143,18 @@ state without changing it. None of these commands copies user data.
 
 Homebrew development formulae, Docker Desktop, Colima, local PostgreSQL and
 Redis services, full Xcode and host language runtimes are outside every profile.
+
+## Air SSH routing
+
+The Air uses the same `work-dev` and `personal-dev` SSH aliases on the LAN and
+away. This repository manages routing through each mini over Tailscale to its
+Ubuntu machine. Ghostty, Zed and the shell helpers use those aliases.
+
+Supply the minis' full Tailscale DNS names and macOS/Linux usernames in
+`~/.config/mac-bootstrap/ssh-air.tsv`, using `config/ssh/air.tsv.example` as a
+template. Bootstrap installs the SSH routes when these local settings exist;
+verification reports missing setup. Keys, authorisation and host trust remain
+explicit commissioning steps. See [Air SSH access](docs/remote-access.md).
 
 ## OrbStack Docker API bridge
 
@@ -152,6 +192,7 @@ described in [`docs/settings.md`](docs/settings.md).
 
 - [Architecture](docs/architecture.md)
 - [Commissioning](docs/commissioning.md)
+- [Air SSH access](docs/remote-access.md)
 - [DataGrip database access](docs/datagrip.md)
 - [Local development TLS](docs/local-dev-tls.md)
 - [OrbStack Docker API bridge](docs/orbstack-docker-api.md)

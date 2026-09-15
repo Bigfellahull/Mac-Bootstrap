@@ -129,6 +129,11 @@ main() {
     verify_app_store
   fi
   if [[ "$MAC_PROFILE_KIND" == air ]]; then
+    if "$MAC_BOOTSTRAP_ROOT/bootstrap/ssh.sh" verify "$profile"; then
+      pass "Air SSH routing configuration"
+    else
+      fail "Air SSH routing configuration"
+    fi
     if "$MAC_BOOTSTRAP_ROOT/bootstrap/ghostty.sh" verify "$profile"; then
       pass "Ghostty preferences and SSH integration"
     else

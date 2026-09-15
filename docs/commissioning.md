@@ -1,70 +1,154 @@
-# Commissioning checklist
+# Commissioning guide
 
-Run each profile independently on a Mac configured as a new machine.
+Use this as the entry point for a new Mac. Complete each mini independently,
+then commission the Air connections to both. The Air applications can be
+installed before the minis are ready.
 
-## Before bootstrap
+Commands below run as the normal macOS user from the `Mac-Bootstrap` checkout
+unless another location is stated. Replace `PROFILE` with `air`, `work-mini` or
+`personal-mini`. `dev-machine` uses `work` and `personal` instead.
 
-- Apply available macOS updates.
-- Enable FileVault and store its recovery material outside this repository.
-- Install the Command Line Tools with `xcode-select --install`.
-- Install Homebrew from its official instructions at <https://brew.sh>.
-- Sign into the Mac App Store on the Air before installing store applications.
+## 1. Before running scripts
 
-## Bootstrap
+- Complete macOS setup as a new machine and apply available updates.
+- Enable FileVault and store its recovery material outside the repositories.
+- Install Apple's Command Line Tools with `xcode-select --install`; full Xcode
+  is not required.
+- Install Homebrew using the [official instructions](https://brew.sh), then
+  follow its shell setup instructions. Do not run bootstrap with `sudo`.
+- Clone or transfer this repository and open a terminal in its root directory.
+- On the Air, sign into the Mac App Store, or use `--skip-app-store` initially.
+- Keep work and personal accounts, credentials and runtime state separate.
+
+No host language SDK, Docker Desktop, Colima or Podman is needed. Application
+package installers may request administrator approval while Homebrew runs.
+
+## 2. Install the macOS profile
 
 ```bash
 bin/mac plan PROFILE
 bin/mac apply PROFILE
+```
+
+On the Air, App Store installation can be deferred:
+
+```bash
+bin/mac apply air --skip-app-store
+```
+
+After signing into the store, rerun `bin/mac apply air` without that flag.
+
+`apply` installs the declared applications and Air configuration. It does not
+sign into services, activate licences, grant permissions, enable Remote Login,
+create SSH keys, accept host keys, initialise TLS or create Ubuntu machines.
+Missing Air SSH settings produce a warning and leave SSH configuration alone;
+complete them in step 5. A full `verify` can fail until commissioning is done.
+
+## 3. Complete application setup on every Mac
+
+- Open 1Password, Tailscale, CleanMyMac and ExpressVPN. Sign in or activate each
+  application as required.
+- Approve the applications' required privacy and network-extension permissions.
+- Enable Tailscale MagicDNS and give the minis stable, distinct names:
+  `work-mini` and `personal-mini`. Record their full Tailscale DNS names locally.
+- Confirm the appropriate mini remains reachable with ExpressVPN both connected
+  and disconnected. Routing, split-tunnel and kill-switch choices stay manual.
+- Choose Finder, Dock, keyboard, screenshot and other preferences using the
+  [settings policy](settings.md). These are not restored by bootstrap.
+
+## 4. Commission each mini and its Ubuntu machine
+
+1. Enable Remote Login for only the intended macOS account. Keep its username
+   locally for the Air settings.
+2. Open OrbStack, complete any licence/setup prompts and confirm its CLI works:
+
+   ```bash
+   orbctl version
+   orbctl doctor
+   docker context show
+   docker compose version
+   ```
+
+3. Initialise and verify the matching local development CA:
+
+   ```bash
+   bin/local-dev-tls init PROFILE
+   bin/local-dev-tls verify PROFILE
+   ```
+
+   These commands are for mini profiles only. CA creation and macOS trust are
+   explicit actions; trust installation may prompt for administrator access.
+4. Clone or transfer `Dev-Machine` to this mini. Follow its
+   [README setup walkthrough](https://github.com/Bigfellahull/Dev-Machine/blob/main/README.md#start-here)
+   to review local resource settings, create the matching Ubuntu machine and
+   complete its Git, provider authentication and database setup. Run host
+   lifecycle commands from that checkout and Ubuntu commands inside the VM.
+5. After the VM exists, export and import the profile-matched TLS handoff using
+   [local development TLS](local-dev-tls.md). Remove the exact temporary
+   handoff from both ends after verification. The CA private key stays on its
+   issuing mini.
+6. On **work only**, commission the dedicated VM-to-Mac key and restricted
+   authorisation in the [Docker API bridge guide](orbstack-docker-api.md).
+   Follow the linked guest guide to initialise, start and verify its service.
+   This key is separate from the Air's interactive SSH keys.
+7. On **work only**, activate Parallels and create or restore its Windows VM
+   separately from OrbStack provisioning.
+8. Configure power and network behaviour for unattended use using the
+   [settings policy](settings.md). Test sleep, wake, restart and remote access;
+   bootstrap does not configure them or bypass FileVault unlock requirements.
+
+The personal Docker API bridge remains disabled. `dev-machine` currently
+installs its guest helper and service only on work, so changing the host policy
+alone cannot enable a personal bridge.
+
+## 5. Commission the Air
+
+- Restart Ghostty and confirm its theme, Starship prompt and shell helpers load.
+- Activate CleanShot X and grant its required screen-recording permissions.
+- Complete licences and permissions for other Air apps as required. Sign into
+  Google Drive, Teams, Notion and other services you use; select sync folders
+  locally. App installation does not restore their settings or data.
+- Confirm FieldKit communicates with the intended Teenage Engineering devices.
+- Follow [Air SSH access](remote-access.md) to fill in
+  `~/.config/mac-bootstrap/ssh-air.tsv`, create separate work/personal Air keys,
+  authorise their public keys on the matching minis and verify host fingerprints.
+- Apply and verify the routes with `bootstrap/ssh.sh apply air` and
+  `bootstrap/ssh.sh verify air`. Both mini destinations must be present in the
+  local settings, even if one is temporarily offline.
+- Configure Zed and Ghostty to use `work-dev` and `personal-dev`. Check default
+  and named tmux sessions, plus `work-devs` and `personal-devs` session listings.
+- Configure [DataGrip database tunnels](datagrip.md) through the mini aliases.
+- Import and trust each required **public** `root-ca.pem` through Keychain
+  Access. Never copy a CA private key or reusable leaf key to the Air. If a
+  browser does not use macOS roots, configure its public-root trust separately.
+- Use the explicit [browser port forward](remote-access.md#browser-access-to-vm-services)
+  when opening a VM development server on the Air. Certificate trust alone
+  does not provide a network connection.
+
+## 6. Final verification
+
+On each Mac, from `Mac-Bootstrap`:
+
+```bash
 bin/mac verify PROFILE
 ```
 
-Run `apply` and `verify` a second time. The second run must remain clean.
+Resolve failures, and review warnings even when the command exits successfully.
+Remote Login may need a manual check if administrator access was unavailable.
+SSH verification checks managed configuration, not authentication or network
+reachability. Application sign-ins, licences and privacy permissions also need
+manual checks. Finish Air verification without `--skip-app-store`.
 
-## All Macs
+Inside each Ubuntu VM, from `~/code/dev-machine`, run `bootstrap/verify.sh` as
+described in its commissioning guide. Resolve required commissioning warnings
+there too; a successful exit code alone is not proof of completion.
 
-- Sign into 1Password, Tailscale, CleanMyMac and ExpressVPN.
-- Approve only the expected privacy and network-extension permissions.
-- Confirm Tailscale remains reachable while ExpressVPN is connected.
-- Confirm no Docker Desktop, Colima or local development runtime was installed.
+Test real SSH and database connections on the LAN and from another network,
+with the VPN enabled and disabled. Validate HTTPS from the browser clients and,
+on work, test a real Docker API consumer with cleanup enabled.
 
-## Air
-
-- Activate CleanShot X and grant only its required screen-recording permissions.
-- Restart Ghostty after bootstrap and confirm its Catppuccin theme and Starship prompt load.
-- Configure Ghostty and Zed against the OpenSSH targets owned by `dev-machine`.
-- Confirm `work-dev` and `personal-dev` attach to the default and named tmux sessions.
-- Confirm `work-devs` and `personal-devs` list the available tmux sessions.
-- Configure DataGrip through SSH tunnels; do not expose mini database ports.
-- Confirm FieldKit can communicate with the intended Teenage Engineering devices.
-- Sign into Microsoft Teams and grant only its required privacy permissions.
-- Choose and record any macOS settings promoted from `docs/settings.md`.
-
-## Minis
-
-- Enable Remote Login for the intended account only.
-- Give Tailscale stable names `personal-mini` and `work-mini`.
-- Start OrbStack and run its diagnostics.
-- Initialize and verify the profile-specific local development CA with `bin/local-dev-tls init PROFILE`.
-- Export the TLS handoff, import it into only the matching Ubuntu profile, then remove the exact temporary handoff from both machines.
-- Validate HTTPS with representative Caddy, Go, .NET and Next.js servers and a browser before relying on the shared certificate.
-- Clone `dev-machine` and follow its commissioning documentation.
-- Verify restart, sleep and network behaviour before relying on unattended access.
-
-## Work mini
-
-- Commission the dedicated work VM key and restricted authorization described in the [OrbStack Docker API bridge guide](orbstack-docker-api.md).
-- Start the VM's user-level bridge service and confirm its forwarded socket is owned by the VM user with mode `0600`.
-- Verify Docker API access, published-port callbacks and cleanup through a real API consumer.
-- Activate Parallels separately.
-- Create or restore the Windows VM without coupling it to OrbStack bootstrap.
-
-## Personal mini
-
-- Leave the OrbStack Docker API bridge disabled unless a personal VM workload needs direct API access.
-- If enabled, commission a new key and socket rather than copying work credentials or runtime state.
-
-## Browser clients
-
-- On any separate Mac used to browse a forwarded VM service, import and trust only the matching profile's public `root-ca.pem` through Keychain Access.
-- Never copy a CA private key or reusable leaf private key to a browser-only client.
-- If Firefox is not configured to use macOS roots, import the public root through Firefox's certificate settings.
+Rerun the Mac profile's `apply` and `verify`; they should need no configuration
+repair. Test representative development workflows, backups and restores using
+the `dev-machine` checklist. Do not rebuild a primary VM merely to check the
+documentation: its destructive recovery test requires important state to be
+saved elsewhere first.

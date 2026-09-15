@@ -1,18 +1,20 @@
 unalias work-dev 2>/dev/null || true
 unalias personal-dev 2>/dev/null || true
 
+# Attach to a work VM tmux session through the managed SSH alias.
 work-dev() {
   local session="${1:-dev}"
-  ssh -t work-dev@orb "tmux new -As ${(q)session}"
+  ssh -t work-dev "tmux new -As ${(q)session}"
 }
 
+# Attach to a personal VM tmux session through the managed SSH alias.
 personal-dev() {
   local session="${1:-dev}"
-  ssh -t personal-dev@orb "tmux new -As ${(q)session}"
+  ssh -t personal-dev "tmux new -As ${(q)session}"
 }
 
-alias work-devs='ssh work-dev@orb "tmux ls"'
-alias personal-devs='ssh personal-dev@orb "tmux ls"'
+alias work-devs='ssh work-dev "tmux ls"'
+alias personal-devs='ssh personal-dev "tmux ls"'
 
 if command -v bat >/dev/null 2>&1; then
   export FZF_CTRL_T_OPTS="--preview 'bat --color=always --style=numbers --line-range=:500 {}'"
