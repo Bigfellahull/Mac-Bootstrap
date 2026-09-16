@@ -129,6 +129,11 @@ main() {
     verify_app_store
   fi
   if [[ "$MAC_PROFILE_KIND" == air ]]; then
+    if "$MAC_BOOTSTRAP_ROOT/bootstrap/google-drive.sh" verify "$profile"; then
+      pass "Google Drive support directory"
+    else
+      fail "Google Drive support directory"
+    fi
     if "$MAC_BOOTSTRAP_ROOT/bootstrap/ssh.sh" verify "$profile"; then
       pass "Air SSH routing configuration"
     else

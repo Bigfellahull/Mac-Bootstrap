@@ -20,10 +20,12 @@ main() {
   load_profile "$profile"
   activate_homebrew
 
+  "$MAC_BOOTSTRAP_ROOT/bootstrap/google-drive.sh" apply "$profile"
   install_brewfile "config/Brewfile.common"
   for brewfile in "${MAC_PROFILE_BREWFILES[@]}"; do
     install_brewfile "$brewfile"
   done
+  "$MAC_BOOTSTRAP_ROOT/bootstrap/google-drive.sh" apply "$profile"
 }
 
 if [[ "${BASH_SOURCE[0]}" == "$0" ]]; then

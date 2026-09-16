@@ -3,6 +3,7 @@
 test:
 	./tests/test-cli.sh
 	./tests/test-homebrew.sh
+	./tests/test-google-drive.sh
 	./tests/test-ghostty.sh
 	./tests/test-starship.sh
 	./tests/test-ssh.sh

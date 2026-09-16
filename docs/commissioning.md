@@ -101,6 +101,15 @@ alone cannot enable a personal bridge.
 
 ## 5. Commission the Air
 
+- Google Drive needs a user-owned `~/Library/Application Support/Google`
+  directory. Bootstrap prepares it before installation and checks it again
+  afterwards. If the directory is owned by root, bootstrap changes only that
+  directory's owner and group to the current user, requesting administrator
+  approval when needed. It preserves existing contents and leaves the
+  system-wide `/Library/Application Support/Google` directory unchanged.
+  To repeat this step, run `bootstrap/google-drive.sh apply air`.
+  Verification checks ownership and access without changing them. See
+  [Google's configuration-folder guidance](https://support.google.com/drive/answer/2565956?hl=en-GB).
 - Restart Ghostty and confirm its theme, Starship prompt and shell helpers load.
 - Activate CleanShot X and grant its required screen-recording permissions.
 - Complete licences and permissions for other Air apps as required. Sign into
