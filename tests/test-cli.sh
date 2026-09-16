@@ -50,7 +50,6 @@ main() {
   assert_contains "$air" 'cask "microsoft-teams"'
   assert_contains "$air" 'cask "rectangle"'
   assert_contains "$air" 'brew "starship"'
-  assert_contains "$air" $'1612653346\tFieldKit'
   assert_contains "$air" $'361285480\tKeynote'
   assert_contains "$air" $'361304891\tNumbers'
   assert_contains "$air" $'361309726\tPages'

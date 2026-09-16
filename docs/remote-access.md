@@ -117,7 +117,7 @@ forwards; review the effective configuration during commissioning.
 5. Verify each host fingerprint through trusted access to the corresponding
    mini before accepting SSH host-key prompts. Test `ssh work-mini`,
    `ssh work-dev`, `ssh personal-mini` and `ssh personal-dev`. Repeat VM access
-   on the LAN and from another network, including with ExpressVPN connected.
+   on the LAN and from another network.
 6. Use `ssh work-dev` or `ssh personal-dev` in Zed. In Ghostty, the `work-dev`
    and `personal-dev` shell helpers attach to tmux; an optional argument selects
    a session. `work-devs` and `personal-devs` list sessions. DataGrip connects

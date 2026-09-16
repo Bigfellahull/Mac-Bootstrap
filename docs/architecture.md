@@ -103,7 +103,3 @@ Tailscale, VPN, 1Password, JetBrains, Parallels, SSH private keys or database
 credentials. Work and personal bridge credentials and runtime sockets must
 remain separate. Their local development CA keys, leaf keys and VM TLS state
 must also remain separate.
-
-ExpressVPN and Tailscale coexistence must be tested during commissioning on
-each profile. The bootstrap installs both applications but does not alter VPN
-routing, split-tunnel or kill-switch settings.

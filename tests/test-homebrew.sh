@@ -49,8 +49,8 @@ main() {
     }
     install_brewfile config/Brewfile.common >/dev/null
   )
-  grep -Fq 'args=bundle install --no-upgrade --file ' "$brew_log" \
-    || fail "Homebrew apply can upgrade installed dependencies"
+  grep -Fq 'args=bundle install --no-upgrade --verbose --file ' "$brew_log" \
+    || fail "Homebrew apply must skip upgrades and show live installation output"
 
   (
     # shellcheck source=bootstrap/verify.sh

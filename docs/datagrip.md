@@ -27,7 +27,7 @@ For each data source:
    (OpenSSH or PuTTY)** and supply that mini's Tailscale hostname, macOS username
    and matching private key explicitly. Keep work and personal keys separate.
 4. Enter database credentials privately; do not add them to this repository.
-5. Test the connection with ExpressVPN both connected and disconnected.
+5. Test the connection over Tailscale on the LAN and from another network.
 
 Azure databases use their managed endpoint and required TLS or identity flow.
 Those connection definitions and credentials remain private DataGrip state.

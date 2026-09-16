@@ -34,7 +34,6 @@ main() {
     rg -qx "brew \"$shell_formula\"" "$ROOT/config/Brewfile.air" \
       || fail "$shell_formula Air formula is missing"
   done
-  rg -q $'^1612653346\tFieldKit$' "$ROOT/config/app-store.air.tsv" || fail "FieldKit App Store entry is missing"
   rg -Fq 'shell-integration-features = ssh-env,ssh-terminfo' \
     "$ROOT/config/ghostty/mac-bootstrap.conf" || fail "Ghostty SSH integration is missing"
   rg -Fq 'theme = dark:Catppuccin Frappe,light:Catppuccin Latte' \

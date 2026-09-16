@@ -9,7 +9,7 @@ install_brewfile() {
   local relative_file="$1"
 
   info "Applying $relative_file"
-  brew bundle install --no-upgrade --file "$MAC_BOOTSTRAP_ROOT/$relative_file"
+  brew bundle install --no-upgrade --verbose --file "$MAC_BOOTSTRAP_ROOT/$relative_file"
 }
 
 main() {

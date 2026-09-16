@@ -18,7 +18,7 @@ can run independently.
 |---|---|
 | Before scripts | macOS setup, FileVault, Command Line Tools, Homebrew and the Air App Store sign-in |
 | Installation | Run the selected profile as the normal macOS user |
-| After scripts, all Macs | App sign-ins, licences, privacy/network permissions and VPN checks |
+| After scripts, all Macs | App sign-ins, licences, privacy/network permissions and Tailscale connectivity checks |
 | After scripts, minis | Remote Login, OrbStack, local TLS CA, Ubuntu provisioning and the work Docker API bridge |
 | After scripts, Air | Local SSH settings, separate keys, host trust, browser CA trust and client connections |
 | Final checks | Run the profile verifier, resolve commissioning warnings and test real connections |
@@ -33,18 +33,15 @@ The Air receives the common applications plus:
 
 - Alcove
 - Backdrop
-- Bartender 6
 - CleanShot X
 - DataGrip
 - Discord
 - Dropover
-- FieldKit
 - Ghostty
 - Google Drive
 - Keynote, Numbers and Pages
 - Linear
 - Microsoft Teams
-- Notion
 - Rectangle
 - SideNotes
 - Starship
@@ -78,7 +75,6 @@ Every Mac receives:
 
 - 1Password
 - CleanMyMac
-- ExpressVPN
 - Tailscale
 
 Authentication, subscription activation, privacy permissions and network
@@ -118,6 +114,11 @@ later:
 bin/mac apply air --skip-app-store
 bin/mac verify air --skip-app-store
 ```
+
+`apply` shows Homebrew command output as installation runs, followed by Air
+configuration messages and Mac App Store installation output where applicable.
+There is no overall progress percentage; individual installers may pause or
+request administrator approval.
 
 `plan` is read-only. `apply` installs missing applications and updates managed
 Air configuration. It does not uninstall applications or request bundle cleanup;

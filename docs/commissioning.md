@@ -46,13 +46,11 @@ complete them in step 5. A full `verify` can fail until commissioning is done.
 
 ## 3. Complete application setup on every Mac
 
-- Open 1Password, Tailscale, CleanMyMac and ExpressVPN. Sign in or activate each
+- Open 1Password, Tailscale and CleanMyMac. Sign in or activate each
   application as required.
 - Approve the applications' required privacy and network-extension permissions.
 - Enable Tailscale MagicDNS and give the minis stable, distinct names:
   `work-mini` and `personal-mini`. Record their full Tailscale DNS names locally.
-- Confirm the appropriate mini remains reachable with ExpressVPN both connected
-  and disconnected. Routing, split-tunnel and kill-switch choices stay manual.
 - Choose Finder, Dock, keyboard, screenshot and other preferences using the
   [settings policy](settings.md). These are not restored by bootstrap.
 
@@ -106,9 +104,8 @@ alone cannot enable a personal bridge.
 - Restart Ghostty and confirm its theme, Starship prompt and shell helpers load.
 - Activate CleanShot X and grant its required screen-recording permissions.
 - Complete licences and permissions for other Air apps as required. Sign into
-  Google Drive, Teams, Notion and other services you use; select sync folders
+  Google Drive, Teams and other services you use; select sync folders
   locally. App installation does not restore their settings or data.
-- Confirm FieldKit communicates with the intended Teenage Engineering devices.
 - Follow [Air SSH access](remote-access.md) to fill in
   `~/.config/mac-bootstrap/ssh-air.tsv`, create separate work/personal Air keys,
   authorise their public keys on the matching minis and verify host fingerprints.
@@ -143,9 +140,9 @@ Inside each Ubuntu VM, from `~/code/dev-machine`, run `bootstrap/verify.sh` as
 described in its commissioning guide. Resolve required commissioning warnings
 there too; a successful exit code alone is not proof of completion.
 
-Test real SSH and database connections on the LAN and from another network,
-with the VPN enabled and disabled. Validate HTTPS from the browser clients and,
-on work, test a real Docker API consumer with cleanup enabled.
+Test real SSH and database connections over Tailscale on the LAN and from
+another network. Validate HTTPS from the browser clients and, on work, test a
+real Docker API consumer with cleanup enabled.
 
 Rerun the Mac profile's `apply` and `verify`; they should need no configuration
 repair. Test representative development workflows, backups and restores using
