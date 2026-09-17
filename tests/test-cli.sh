@@ -44,7 +44,7 @@ main() {
   [[ "$profiles" == $'air\npersonal-mini\nwork-mini' ]] || fail "profile list is incorrect"
 
   air="$("$ROOT/bin/mac" plan air)"
-  assert_contains "$air" 'cask "datagrip"'
+  assert_contains "$air" 'cask "tableplus"'
   assert_contains "$air" 'cask "alcove"'
   assert_contains "$air" 'cask "cleanshot"'
   assert_contains "$air" 'cask "microsoft-teams"'
@@ -65,6 +65,7 @@ main() {
   assert_contains "$air" 'Managed Air SSH routing:'
   assert_contains "$air" 'using Tailscale everywhere'
   assert_not_contains "$air" 'recordly'
+  assert_not_contains "$air" 'datagrip'
   assert_not_contains "$air" 'orbstack'
   assert_not_contains "$air" 'OrbStack Docker API bridge'
   assert_not_contains "$air" 'Local development TLS'
@@ -74,7 +75,7 @@ main() {
   personal="$("$ROOT/bin/mac" plan personal-mini)"
   assert_contains "$personal" 'cask "1password"'
   assert_contains "$personal" 'cask "orbstack"'
-  assert_not_contains "$personal" 'datagrip'
+  assert_not_contains "$personal" 'tableplus'
   assert_not_contains "$personal" 'parallels'
   assert_not_contains "$personal" 'shell-integration-features'
   assert_not_contains "$personal" 'starship'
@@ -92,7 +93,7 @@ main() {
   assert_contains "$work" 'orbstack-docker-api-work-mini'
   assert_contains "$work" 'Local development TLS:'
   assert_contains "$work" 'bin/local-dev-tls init work-mini'
-  assert_not_contains "$work" 'datagrip'
+  assert_not_contains "$work" 'tableplus'
   assert_not_contains "$work" 'starship'
 
   if "$ROOT/bin/mac" plan unknown >/dev/null 2>&1; then

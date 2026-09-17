@@ -4,7 +4,7 @@
 
 ```text
 MacBook Air
-  apps / DataGrip / Zed / Ghostty / shell tools / Tailscale
+  apps / TablePlus / Zed / Ghostty / shell tools / Tailscale
                    |
                    | SSH and database tunnels
                    v

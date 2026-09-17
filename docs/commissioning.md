@@ -123,7 +123,7 @@ alone cannot enable a personal bridge.
   local settings, even if one is temporarily offline.
 - Configure Zed and Ghostty to use `work-dev` and `personal-dev`. Check default
   and named tmux sessions, plus `work-devs` and `personal-devs` session listings.
-- Configure [DataGrip database tunnels](datagrip.md) through the mini aliases.
+- Configure [TablePlus database tunnels](tableplus.md) through the mini aliases.
 - Import and trust each required **public** `root-ca.pem` through Keychain
   Access. Never copy a CA private key or reusable leaf key to the Air. If a
   browser does not use macOS roots, configure its public-root trust separately.

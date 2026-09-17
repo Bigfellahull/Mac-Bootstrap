@@ -26,7 +26,7 @@ main() {
   rg -qx 'cask "orbstack"' "$ROOT/config/Brewfile.mini" || fail "OrbStack mini manifest is missing"
   rg -qx 'brew "mkcert"' "$ROOT/config/Brewfile.mini" || fail "mkcert mini manifest is missing"
   rg -qx 'cask "parallels"' "$ROOT/config/Brewfile.work-mini" || fail "Parallels work manifest is missing"
-  rg -qx 'cask "datagrip"' "$ROOT/config/Brewfile.air" || fail "DataGrip Air manifest is missing"
+  rg -qx 'cask "tableplus"' "$ROOT/config/Brewfile.air" || fail "TablePlus Air manifest is missing"
   rg -qx 'cask "cleanshot"' "$ROOT/config/Brewfile.air" || fail "CleanShot X Air manifest is missing"
   rg -qx 'cask "microsoft-teams"' "$ROOT/config/Brewfile.air" || fail "Microsoft Teams Air manifest is missing"
   rg -qx 'brew "starship"' "$ROOT/config/Brewfile.air" || fail "Starship Air formula is missing"
@@ -71,7 +71,7 @@ main() {
       || fail "$mini_profile local development TLS is not enabled"
   done
 
-  if rg -i '(grok|edge|whatsapp|moom|aseprite|adguard|imovie|recordly|cursor|github-desktop|redis-insight)' \
+  if rg -i '(grok|edge|whatsapp|moom|aseprite|adguard|imovie|recordly|cursor|github-desktop|redis-insight|datagrip)' \
     "$ROOT/config"/Brewfile.* "$ROOT/config/app-store.air.tsv" "$ROOT/profiles"; then
     fail "an explicitly excluded application appears in a profile"
   fi

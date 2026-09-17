@@ -34,7 +34,6 @@ The Air receives the common applications plus:
 - Alcove
 - Backdrop
 - CleanShot X
-- DataGrip
 - Discord
 - Dropover
 - Ghostty
@@ -45,6 +44,7 @@ The Air receives the common applications plus:
 - Rectangle
 - SideNotes
 - Starship
+- TablePlus
 - bat
 - fd
 - fzf
@@ -194,7 +194,7 @@ described in [`docs/settings.md`](docs/settings.md).
 - [Architecture](docs/architecture.md)
 - [Commissioning](docs/commissioning.md)
 - [Air SSH access](docs/remote-access.md)
-- [DataGrip database access](docs/datagrip.md)
+- [TablePlus database access](docs/tableplus.md)
 - [Local development TLS](docs/local-dev-tls.md)
 - [OrbStack Docker API bridge](docs/orbstack-docker-api.md)
 - [macOS settings policy](docs/settings.md)

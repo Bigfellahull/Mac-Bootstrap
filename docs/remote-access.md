@@ -120,8 +120,8 @@ forwards; review the effective configuration during commissioning.
    on the LAN and from another network.
 6. Use `ssh work-dev` or `ssh personal-dev` in Zed. In Ghostty, the `work-dev`
    and `personal-dev` shell helpers attach to tmux; an optional argument selects
-   a session. `work-devs` and `personal-devs` list sessions. DataGrip connects
-   through the mini aliases as described in [database access](datagrip.md).
+   a session. `work-devs` and `personal-devs` list sessions. TablePlus connects
+   through the mini aliases as described in [database access](tableplus.md).
 
 Usernames, Tailscale account names, private keys and host trust remain local.
 Bootstrap never creates keys, modifies authorised keys or accepts host keys.
