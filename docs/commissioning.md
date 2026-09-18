@@ -91,7 +91,10 @@ complete them in step 5. A full `verify` can fail until commissioning is done.
    This key is separate from the Air's interactive SSH keys.
 7. On **work only**, activate Parallels and create or restore its Windows VM
    separately from OrbStack provisioning.
-8. Configure power and network behaviour for unattended use using the
+8. On **work only**, sign into OneDrive and select the folders to sync. Follow
+   [OneDrive access from the Air](onedrive.md) to download files locally and
+   commission macOS File Sharing.
+9. Configure power and network behaviour for unattended use using the
    [settings policy](settings.md). Test sleep, wake, restart and remote access;
    bootstrap does not configure them or bypass FileVault unlock requirements.
 
@@ -124,6 +127,8 @@ alone cannot enable a personal bridge.
 - Configure Zed and Ghostty to use `work-dev` and `personal-dev`. Check default
   and named tmux sessions, plus `work-devs` and `personal-devs` session listings.
 - Configure [TablePlus database tunnels](tableplus.md) through the mini aliases.
+- Connect to the work mini's [OneDrive share](onedrive.md#connect-from-the-air)
+  in Finder and test file access and cloud synchronisation.
 - Import and trust each required **public** `root-ca.pem` through Keychain
   Access. Never copy a CA private key or reusable leaf key to the Air. If a
   browser does not use macOS roots, configure its public-root trust separately.

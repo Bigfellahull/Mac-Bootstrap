@@ -64,10 +64,13 @@ profile-specific local development CA and reusable VM server certificate.
 
 ### Work mini
 
-The work mini receives the common applications, OrbStack and Parallels Desktop.
+The work mini receives the common applications, OneDrive, OrbStack and Parallels Desktop.
 Its profile expects a commissioned SSH-forwarded OrbStack Docker API bridge for
 development processes that need direct API access from the Ubuntu VM. It also
 receives `mkcert` for its own local development TLS authority.
+
+OneDrive sign-in, sync selection and macOS File Sharing remain manual. See
+[OneDrive access from the Air](docs/onedrive.md) for setup and verification.
 
 ### Common applications
 
@@ -195,6 +198,7 @@ described in [`docs/settings.md`](docs/settings.md).
 - [Commissioning](docs/commissioning.md)
 - [Air SSH access](docs/remote-access.md)
 - [TablePlus database access](docs/tableplus.md)
+- [OneDrive access from the Air](docs/onedrive.md)
 - [Local development TLS](docs/local-dev-tls.md)
 - [OrbStack Docker API bridge](docs/orbstack-docker-api.md)
 - [macOS settings policy](docs/settings.md)

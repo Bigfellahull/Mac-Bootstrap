@@ -36,6 +36,7 @@ Mini settings:
 
 - Stable hostname
 - Remote Login
+- File Sharing, shared folders and access permissions
 - Sleep prevention while connected to power
 - Wake for network access
 - Restart after power failure
