@@ -47,6 +47,7 @@ main() {
   assert_contains "$air" 'cask "tableplus"'
   assert_contains "$air" 'cask "alcove"'
   assert_contains "$air" 'cask "cleanshot"'
+  assert_contains "$air" 'cask "fastmail"'
   assert_contains "$air" 'cask "microsoft-teams"'
   assert_contains "$air" 'cask "rectangle"'
   assert_contains "$air" 'brew "starship"'
@@ -76,6 +77,7 @@ main() {
   assert_contains "$personal" 'cask "1password"'
   assert_contains "$personal" 'cask "orbstack"'
   assert_not_contains "$personal" 'tableplus'
+  assert_not_contains "$personal" 'fastmail'
   assert_not_contains "$personal" 'parallels'
   assert_not_contains "$personal" 'shell-integration-features'
   assert_not_contains "$personal" 'starship'
@@ -94,6 +96,7 @@ main() {
   assert_contains "$work" 'Local development TLS:'
   assert_contains "$work" 'bin/local-dev-tls init work-mini'
   assert_not_contains "$work" 'tableplus'
+  assert_not_contains "$work" 'fastmail'
   assert_not_contains "$work" 'starship'
 
   if "$ROOT/bin/mac" plan unknown >/dev/null 2>&1; then

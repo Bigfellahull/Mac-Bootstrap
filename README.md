@@ -36,6 +36,7 @@ The Air receives the common applications plus:
 - CleanShot X
 - Discord
 - Dropover
+- Fastmail
 - Ghostty
 - Google Drive
 - Keynote, Numbers and Pages
