@@ -20,6 +20,15 @@ The macOS machines are durable and the Ubuntu machines are disposable. Host
 bootstrap therefore installs and verifies expected state but does not delete
 unexpected applications. Profile changes must not be used as an uninstaller.
 
+The work mini also hosts a separate Parallels Windows VM for .NET Framework,
+ASP.NET and native Windows C++ projects. Its compilers, targeting packs and
+application dependencies belong inside Windows. Mac bootstrap installs
+Parallels; Windows commissioning remains manual. SQL Server containers belong
+to the work mini's OrbStack runtime, with project-specific data and credentials.
+See [Windows development](windows-development.md) for generic guest prerequisites.
+Application-specific requirements and machine inventories belong in private
+documentation.
+
 ## Air SSH routing
 
 This repository owns the Air's SSH aliases, jump-host routing and macOS access

@@ -5,7 +5,9 @@ MacBook Air, personal Mac mini and work Mac mini. It is designed for Macs set
 up as new machines rather than restored from a Time Machine system image.
 
 Project repositories, SDKs, databases and AI coding CLIs do not live here.
-They belong in the disposable Ubuntu machines managed by `dev-machine`.
+General development belongs in the disposable Ubuntu machines managed by
+`dev-machine`. Windows-specific builds and applications use the work mini's
+separately commissioned Parallels VM; see [Windows development](docs/windows-development.md).
 
 ## Start here
 
@@ -197,6 +199,7 @@ described in [`docs/settings.md`](docs/settings.md).
 
 - [Architecture](docs/architecture.md)
 - [Commissioning](docs/commissioning.md)
+- [Windows development in Parallels](docs/windows-development.md)
 - [Air SSH access](docs/remote-access.md)
 - [TablePlus database access](docs/tableplus.md)
 - [OneDrive access from the Air](docs/onedrive.md)

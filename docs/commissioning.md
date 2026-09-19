@@ -90,7 +90,20 @@ complete them in step 5. A full `verify` can fail until commissioning is done.
    Follow the linked guest guide to initialise, start and verify its service.
    This key is separate from the Air's interactive SSH keys.
 7. On **work only**, activate Parallels and create or restore its Windows VM
-   separately from OrbStack provisioning.
+   separately from OrbStack provisioning. Install Git for Windows, rustup and
+   Visual Studio 2026 Build Tools with the x64 C++ workload. Share the required
+   transfer directory through a mapped Windows drive and make it accessible
+   from the OrbStack guest. Keep its location in local settings. Then follow
+   [Dev-Machine's Windows native build commissioning](https://github.com/Bigfellahull/Dev-Machine/blob/main/docs/windows-builds.md):
+   run `orbstack-windows-build provision` and `orbstack-windows-build verify`
+   inside work Ubuntu to install and verify the pinned Rust x64 target.
+   Native project helpers invoke `mac prlctl` through OrbStack; the restricted
+   Docker API SSH key remains for socket forwarding only and needs no new grant.
+   Follow [Windows development in Parallels](windows-development.md) for
+   additional .NET, web and native application prerequisites. Keep project
+   dependencies, package access and runtime settings in private documentation.
+   Use the configured Parallels UNC share for tools that support it; mapped
+   drive letters can change between sessions.
 8. On **work only**, sign into OneDrive and select the folders to sync. Follow
    [OneDrive access from the Air](onedrive.md) to download files locally and
    commission macOS File Sharing.
