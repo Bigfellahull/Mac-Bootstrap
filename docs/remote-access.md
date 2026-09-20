@@ -126,6 +126,67 @@ forwards; review the effective configuration during commissioning.
 Usernames, Tailscale account names, private keys and host trust remain local.
 Bootstrap never creates keys, modifies authorised keys or accepts host keys.
 
+## Images in remote Codex sessions
+
+Run `work-image` or `personal-image` on the Mac holding the clipboard, in a
+local terminal tab. The Air profile installs
+[pngpaste](https://formulae.brew.sh/formula/pngpaste) and both shell commands:
+
+```bash
+bin/mac apply air
+```
+
+Open a new zsh session after applying the profile. No separate dependency
+installation is needed.
+
+Copy an image, then choose its destination explicitly:
+
+```bash
+work-image
+personal-image
+```
+
+With no arguments, each command captures the current image as a PNG and
+transfers it through the matching SSH alias. Run only the command for the intended VM. Ubuntu must have
+Python 3.8 or later, as provided by `dev-machine`. No clipboard service or X11
+server is needed in Ubuntu.
+
+Images live in `~/.local/share/dev-machine/images/` inside the selected VM,
+with unique `dev-image-<identifier>.png` names. The directory has mode `700`
+and image files have mode `600`. The helper refuses symlinked directory
+components and directories writable by other users.
+
+After a successful upload, the helper prints the remote path and replaces the
+Mac clipboard with `Inspect this image: <remote path>`. Paste that text into
+Codex in the selected VM, including an existing tmux session. This asks Codex
+to open the transferred file; it does not invoke Codex's image-paste shortcut.
+Copy the original image again before sending it to another VM.
+
+Capture or transfer failures leave the clipboard unchanged. If the upload
+succeeds but the clipboard update fails, use the printed path. Temporary
+local captures are removed when the helper exits normally or reports an error.
+
+Images do not expire automatically, so resumed sessions can still use them.
+Clean one VM explicitly, optionally selecting images older than 30 days:
+
+```bash
+work-image clean
+personal-image clean --older-than 30d
+```
+
+Cleanup shows the VM alias, full directory, selected file count and total size.
+Type that exact VM alias to confirm. Age uses the image file's modification
+time; `Nd` accepts a positive whole number of days. Only regular files with
+the helper's naming pattern are selected. Unrelated files, symlinks,
+subdirectories and images uploaded after the preview are retained. Cleanup
+stops if a selected file changes before confirmation. Removing an image can
+prevent a resumed session from opening it again.
+
+Both zsh functions call the shared executable at
+`~/.config/mac-bootstrap/dev-image`. A macOS shortcut can invoke it with
+`send work-dev` or `send personal-dev`. Ensure Homebrew's `bin` directory is
+on the shortcut's `PATH`. Bootstrap does not assign a global keyboard shortcut.
+
 ## Browser access to VM services
 
 After commissioning SSH and browser CA trust, forward a specific development

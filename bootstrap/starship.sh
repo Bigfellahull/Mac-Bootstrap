@@ -9,6 +9,8 @@ config_source="$MAC_BOOTSTRAP_ROOT/config/starship.toml"
 config_target="$HOME/.config/starship.toml"
 managed_zsh_source="$MAC_BOOTSTRAP_ROOT/config/zsh/air.zsh"
 managed_zsh_target="$HOME/.config/mac-bootstrap/air.zsh"
+image_helper_source="$MAC_BOOTSTRAP_ROOT/bin/dev-image"
+image_helper_target="$HOME/.config/mac-bootstrap/dev-image"
 zsh_config="$HOME/.zshrc"
 temporary_zsh_config=
 managed_block_start='# mac-bootstrap: managed Air shell integration'
@@ -91,6 +93,9 @@ apply_config() {
   validate_regular_target "$config_target"
   validate_regular_target "$managed_zsh_target"
   validate_regular_target "$zsh_config"
+  validate_regular_target "$image_helper_target"
+  path_has_no_symlinked_home_components "$image_helper_target" \
+    || die "Refusing a symlinked image helper installation path."
   prepare_zsh_config "$(dirname "$zsh_config")" \
     || die "Existing zsh configuration is invalid or has an incomplete managed block."
 
@@ -102,6 +107,8 @@ apply_config() {
     ! cmp -s "$managed_zsh_source" "$managed_zsh_target"; then
     install -m 0644 "$managed_zsh_source" "$managed_zsh_target"
   fi
+
+  install -m 0755 "$image_helper_source" "$image_helper_target"
 
   if [[ -f "$zsh_config" ]] && cmp -s "$zsh_config" "$temporary_zsh_config"; then
     info "Starship and development VM helpers are already configured for zsh"
@@ -122,6 +129,9 @@ verify_config() {
   [[ -f "$config_target" && ! -L "$config_target" ]] || return 1
   [[ -f "$managed_zsh_target" && ! -L "$managed_zsh_target" ]] || return 1
   [[ -f "$zsh_config" && ! -L "$zsh_config" ]] || return 1
+  [[ -x "$image_helper_target" && ! -L "$image_helper_target" ]] || return 1
+  path_has_no_symlinked_home_components "$image_helper_target" || return 1
+  cmp -s "$image_helper_source" "$image_helper_target" || return 1
   cmp -s "$config_source" "$config_target" || return 1
   cmp -s "$managed_zsh_source" "$managed_zsh_target" || return 1
   prepare_zsh_config "${TMPDIR:-/tmp}" || return 1
@@ -142,6 +152,7 @@ main() {
       printf '\nManaged Starship and zsh configuration:\n'
       printf '%s <- %s\n' "$config_target" "$config_source"
       printf '%s <- %s\n' "$managed_zsh_target" "$managed_zsh_source"
+      printf '%s <- %s\n' "$image_helper_target" "$image_helper_source"
       sed 's/^/  /' "$managed_zsh_source"
       for zsh_line in "${zsh_lines[@]}"; do
         printf '%s: %s\n' "$zsh_config" "$zsh_line"

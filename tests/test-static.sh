@@ -31,7 +31,7 @@ main() {
   rg -qx 'cask "fastmail"' "$ROOT/config/Brewfile.air" || fail "Fastmail Air manifest is missing"
   rg -qx 'cask "microsoft-teams"' "$ROOT/config/Brewfile.air" || fail "Microsoft Teams Air manifest is missing"
   rg -qx 'brew "starship"' "$ROOT/config/Brewfile.air" || fail "Starship Air formula is missing"
-  for shell_formula in bat fd fzf ripgrep zoxide zsh-autosuggestions zsh-syntax-highlighting; do
+  for shell_formula in bat fd fzf pngpaste ripgrep zoxide zsh-autosuggestions zsh-syntax-highlighting; do
     rg -qx "brew \"$shell_formula\"" "$ROOT/config/Brewfile.air" \
       || fail "$shell_formula Air formula is missing"
   done
@@ -81,7 +81,7 @@ main() {
     fail "an excluded container runtime appears in a profile"
   fi
 
-  if rg -v '^(brew "(bat|fd|fzf|mas|mkcert|ripgrep|starship|zoxide|zsh-autosuggestions|zsh-syntax-highlighting)"|cask "[a-z0-9@+._-]+"|[[:space:]]*|#.*)$' "$ROOT/config"/Brewfile.*; then
+  if rg -v '^(brew "(bat|fd|fzf|mas|mkcert|pngpaste|ripgrep|starship|zoxide|zsh-autosuggestions|zsh-syntax-highlighting)"|cask "[a-z0-9@+._-]+"|[[:space:]]*|#.*)$' "$ROOT/config"/Brewfile.*; then
     fail "a Brewfile contains an unexpected entry"
   fi
 

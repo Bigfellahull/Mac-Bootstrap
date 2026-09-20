@@ -46,6 +46,9 @@ main() {
     fail "Starship config is incorrect"
   cmp -s "$ROOT/config/zsh/air.zsh" "$new_home/.config/mac-bootstrap/air.zsh" || \
     fail "managed zsh config is incorrect"
+  cmp -s "$ROOT/bin/dev-image" "$new_home/.config/mac-bootstrap/dev-image" || \
+    fail "image helper is incorrect"
+  [[ -x "$new_home/.config/mac-bootstrap/dev-image" ]] || fail "image helper is not executable"
   grep -Fxq "$init_line" "$new_home/.zshrc" || \
     fail "Starship zsh initialization is missing"
   grep -Fxq "$source_line" "$new_home/.zshrc" || \
@@ -82,6 +85,39 @@ main() {
   ')"
   [[ "$actual" == $'work-dev\ntmux ls\npersonal-dev\ntmux ls' ]] || \
     fail "development VM session-list aliases are incorrect"
+
+  actual="$(HOME="$new_home" zsh -fc '
+    source "$HOME/.config/mac-bootstrap/air.zsh"
+    work-image --help
+    personal-image --help
+  ')"
+  [[ "$actual" == *'work-image clean [--older-than Nd]'* && "$actual" == *'personal-image clean [--older-than Nd]'* ]] || \
+    fail "image helper function does not invoke the installed executable"
+  cat > "$new_home/.config/mac-bootstrap/dev-image" <<'EOF'
+#!/usr/bin/env bash
+printf '<%s>\n' "$@"
+EOF
+  actual="$(HOME="$new_home" zsh -fc '
+    source "$HOME/.config/mac-bootstrap/air.zsh"
+    work-image
+    personal-image
+    work-image clean
+    personal-image clean --older-than 30d
+    work-image clean --older-than "30 d"
+  ')"
+  [[ "$actual" == $'<send>\n<work-dev>\n<send>\n<personal-dev>\n<clean>\n<work-dev>\n<clean>\n<personal-dev>\n<--older-than>\n<30d>\n<clean>\n<work-dev>\n<--older-than>\n<30 d>' ]] || \
+    fail "image commands did not preserve the action, VM or argument boundaries"
+
+  if HOME="$new_home" "$ROOT/bootstrap/starship.sh" verify air; then
+    fail "stale image helper was accepted"
+  fi
+  HOME="$new_home" "$ROOT/bootstrap/starship.sh" apply air >/dev/null
+  HOME="$new_home" "$ROOT/bootstrap/starship.sh" verify air || fail "image helper was not refreshed"
+  rm "$new_home/.config/mac-bootstrap/dev-image"
+  ln -s "$test_directory/elsewhere" "$new_home/.config/mac-bootstrap/dev-image"
+  if HOME="$new_home" "$ROOT/bootstrap/starship.sh" apply air >/dev/null 2>&1; then
+    fail "symlinked image helper was accepted"
+  fi
 
   existing_home="$test_directory/existing-home"
   mkdir -p "$existing_home/.config"
@@ -130,6 +166,8 @@ main() {
     fail "Starship config was applied to a mini profile"
   [[ ! -e "$personal_home/.config/mac-bootstrap/air.zsh" ]] || \
     fail "managed zsh config was applied to a mini profile"
+  [[ ! -e "$personal_home/.config/mac-bootstrap/dev-image" ]] || \
+    fail "image helper was installed on a mini profile"
 
   printf 'ok: Starship Air configuration\n'
 }

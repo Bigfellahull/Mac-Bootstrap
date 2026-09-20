@@ -163,6 +163,10 @@ template. Bootstrap installs the SSH routes when these local settings exist;
 verification reports missing setup. Keys, authorisation and host trust remain
 explicit commissioning steps. See [Air SSH access](docs/remote-access.md).
 
+The Air's `work-image` and `personal-image` helpers transfer a clipboard image
+to the selected VM and copy an inspection prompt for pasting into Codex. Images remain until explicitly cleaned. See
+[remote image transfer and cleanup](docs/remote-access.md#images-in-remote-codex-sessions).
+
 ## OrbStack Docker API bridge
 
 The work VM can reach the Mac's user-owned OrbStack socket through an encrypted
