@@ -22,7 +22,8 @@ main() {
   local inactive_home
   local init_line
   local new_home
-  local personal_home
+  local mini_home
+  local mini_profile
   local source_line
   local symlink_home
 
@@ -37,6 +38,7 @@ main() {
   fi
 
   zsh -n "$ROOT/config/zsh/air.zsh"
+  zsh -n "$ROOT/config/zsh/common.zsh"
   test_directory="$(mktemp -d "${TMPDIR:-/tmp}/mac-bootstrap-starship-test.XXXXXX")"
 
   new_home="$test_directory/new-home"
@@ -159,17 +161,40 @@ EOF
     fail "symlinked Starship config was accepted"
   fi
 
-  personal_home="$test_directory/personal-home"
-  mkdir -p "$personal_home"
-  HOME="$personal_home" "$ROOT/bootstrap/starship.sh" apply personal-mini
-  [[ ! -e "$personal_home/.config/starship.toml" ]] || \
-    fail "Starship config was applied to a mini profile"
-  [[ ! -e "$personal_home/.config/mac-bootstrap/air.zsh" ]] || \
-    fail "managed zsh config was applied to a mini profile"
-  [[ ! -e "$personal_home/.config/mac-bootstrap/dev-image" ]] || \
-    fail "image helper was installed on a mini profile"
+  for mini_profile in personal-mini work-mini; do
+    mini_home="$test_directory/$mini_profile"
+    mkdir -p "$mini_home"
+    printf '%s\n' 'export EXISTING_SETTING=preserved' > "$mini_home/.zshrc"
+    HOME="$mini_home" "$ROOT/bootstrap/starship.sh" apply "$mini_profile" >/dev/null
+    HOME="$mini_home" "$ROOT/bootstrap/starship.sh" verify "$mini_profile" || \
+      fail "$mini_profile shell did not verify"
+    cp "$mini_home/.zshrc" "$mini_home/expected.zshrc"
+    HOME="$mini_home" "$ROOT/bootstrap/starship.sh" apply "$mini_profile" >/dev/null
+    cmp -s "$mini_home/.zshrc" "$mini_home/expected.zshrc" || fail "mini apply is not idempotent"
+    [[ ! -e "$mini_home/.config/mac-bootstrap/air.zsh" ]] || \
+      fail "Air helpers were installed on a mini profile"
+    [[ ! -e "$mini_home/.config/mac-bootstrap/dev-image" ]] || \
+      fail "image helper was installed on a mini profile"
+    actual="$(HOME="$mini_home" zsh -dfi -c '
+      unsetopt zle
+      starship() { print "export STARSHIP_INITIALISED=yes"; }
+      source "$HOME/.zshrc"
+      [[ "$EXISTING_SETTING" == preserved && "$STARSHIP_INITIALISED" == yes ]] || exit 1
+      (( $+functions[compdef] )) || exit 1
+      (( ! $+functions[work-dev] && ! $+functions[personal-dev] )) || exit 1
+      print ready
+    ')"
+    [[ "$actual" == ready ]] || fail "mini interactive shell did not initialise"
+    printf '\n# stale\n' >> "$mini_home/.config/mac-bootstrap/common.zsh"
+    if HOME="$mini_home" "$ROOT/bootstrap/starship.sh" verify "$mini_profile"; then
+      fail "stale mini shell configuration was accepted"
+    fi
+    HOME="$mini_home" "$ROOT/bootstrap/starship.sh" apply "$mini_profile" >/dev/null
+    HOME="$mini_home" "$ROOT/bootstrap/starship.sh" verify "$mini_profile" || \
+      fail "mini shell configuration was not repaired"
+  done
 
-  printf 'ok: Starship Air configuration\n'
+  printf 'ok: Starship and shared macOS shell configuration\n'
 }
 
 trap cleanup EXIT

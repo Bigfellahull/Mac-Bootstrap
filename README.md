@@ -46,28 +46,21 @@ The Air receives the common applications plus:
 - Microsoft Teams
 - Rectangle
 - SideNotes
-- Starship
 - TablePlus
-- bat
-- fd
-- fzf
-- ripgrep
-- zoxide
-- zsh-autosuggestions
-- zsh-syntax-highlighting
 - Windows App
 - Zed
 
 ### Personal mini
 
-The personal mini receives the common applications plus OrbStack. Support for
-an SSH-forwarded OrbStack Docker API bridge is available but disabled until a
+The personal mini receives the common applications plus 1Password CLI and
+OrbStack. Support for an SSH-forwarded OrbStack Docker API bridge is available but disabled until a
 personal workload needs it. It also receives `mkcert` for commissioning a
 profile-specific local development CA and reusable VM server certificate.
 
 ### Work mini
 
-The work mini receives the common applications, OneDrive, OrbStack and Parallels Desktop.
+The work mini receives the common applications, 1Password CLI, OneDrive,
+OrbStack and Parallels Desktop.
 Its profile expects a commissioned SSH-forwarded OrbStack Docker API bridge for
 development processes that need direct API access from the Ubuntu VM. It also
 receives `mkcert` for its own local development TLS authority.
@@ -82,6 +75,8 @@ Every Mac receives:
 - 1Password
 - CleanMyMac
 - Tailscale
+- Starship, bat, fd, fzf, ripgrep and zoxide
+- zsh-autosuggestions and zsh-syntax-highlighting
 
 Authentication, subscription activation, privacy permissions and network
 extension approval remain interactive.
@@ -121,13 +116,13 @@ bin/mac apply air --skip-app-store
 bin/mac verify air --skip-app-store
 ```
 
-`apply` shows Homebrew command output as installation runs, followed by Air
+`apply` shows Homebrew command output as installation runs, followed by shell and profile
 configuration messages and Mac App Store installation output where applicable.
 There is no overall progress percentage; individual installers may pause or
 request administrator approval.
 
 `plan` is read-only. `apply` installs missing applications and updates managed
-Air configuration. It does not uninstall applications or request bundle cleanup;
+shell and profile configuration. It does not uninstall applications or request bundle cleanup;
 Homebrew can still perform its normal dependency and cache maintenance.
 `verify` reports missing state without changing it. None of these commands copies user data. Before
 commissioning, missing Air SSH settings, mini TLS state and the work bridge can
@@ -138,7 +133,7 @@ without it after completing those installations.
 
 - Air: graphical client applications, SSH, Tailscale, Zed, Ghostty, Starship and
   focused command-line shell tools.
-- Minis: Tailscale, Remote Login and OrbStack.
+- Minis: Tailscale, Remote Login, OrbStack, 1Password CLI and the shared shell tools.
 - Work mini: an SSH-forwarded OrbStack Docker API bridge, commissioned with a
   dedicated VM key.
 - Work mini: Parallels is independent of OrbStack provisioning.
@@ -193,10 +188,12 @@ command-scoped wrappers; they do not establish trust themselves. See
 
 The bootstrap manages only explicitly declared macOS settings. The Air profile
 manages Ghostty's Catppuccin light/dark preferences, SSH environment and
-terminfo integration, plus a shared Starship prompt, focused zsh enhancements
-and development VM helpers for local sessions. Remote Bash and tmux prompt
-configuration belongs to `dev-machine`. Dock, Finder, keyboard, trackpad,
-screenshot, power and Remote Login settings remain operator-controlled as
+terminfo integration. All profiles manage a shared Starship prompt, zsh
+completion, autosuggestions, syntax highlighting, fzf and zoxide for local
+and SSH zsh sessions. Development VM helpers belong to the Air profile.
+Ubuntu Bash and tmux prompt configuration belongs to `dev-machine`. Dock,
+Finder, keyboard, trackpad, screenshot, power and Remote Login settings remain
+operator-controlled as
 described in [`docs/settings.md`](docs/settings.md).
 
 ## Documentation

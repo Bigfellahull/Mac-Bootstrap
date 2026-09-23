@@ -94,10 +94,13 @@ does not introduce additional package-manager stacks.
 
 ## Application configuration
 
-The Air profile installs Starship, fzf, zoxide, fd, ripgrep, bat, zsh
-autosuggestions and zsh syntax highlighting. Its managed zsh fragment enables
-fzf key bindings and completion, zoxide navigation, bat previews and the two
-zsh enhancements alongside development VM SSH and tmux helpers. Managed
+All profiles install Starship, fzf, zoxide, fd, ripgrep, bat, zsh
+autosuggestions and zsh syntax highlighting. A shared zsh fragment enables
+Homebrew paths, tab completion, fzf key bindings and completion, zoxide
+navigation, bat previews and the two zsh enhancements. These settings apply
+to local and SSH zsh sessions on macOS. The Air also installs development VM
+SSH and tmux helpers. Both minis install 1Password CLI; authentication remains
+interactive and separate for work and personal accounts. Managed Air
 Ghostty preferences come from a dedicated fragment referenced by
 `~/.config/ghostty/config`; it selects Catppuccin light/dark themes and SSH
 environment and terminfo integration. Existing configuration outside managed

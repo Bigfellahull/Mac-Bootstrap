@@ -1,13 +1,5 @@
-brew "bat"
-brew "fd"
-brew "fzf"
 brew "mas"
 brew "pngpaste"
-brew "ripgrep"
-brew "starship"
-brew "zoxide"
-brew "zsh-autosuggestions"
-brew "zsh-syntax-highlighting"
 
 cask "alcove"
 cask "backdrop"

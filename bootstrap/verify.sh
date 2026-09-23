@@ -144,11 +144,11 @@ main() {
     else
       fail "Ghostty preferences and SSH integration"
     fi
-    if "$MAC_BOOTSTRAP_ROOT/bootstrap/starship.sh" verify "$profile"; then
-      pass "Starship zsh configuration"
-    else
-      fail "Starship zsh configuration"
-    fi
+  fi
+  if "$MAC_BOOTSTRAP_ROOT/bootstrap/starship.sh" verify "$profile"; then
+    pass "Starship zsh configuration"
+  else
+    fail "Starship zsh configuration"
   fi
   if [[ "$MAC_PROFILE_KIND" == mini ]]; then
     if "$MAC_BOOTSTRAP_ROOT/bootstrap/orbstack-docker-api.sh" verify "$profile"; then

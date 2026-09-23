@@ -30,10 +30,11 @@ main() {
   rg -qx 'cask "cleanshot"' "$ROOT/config/Brewfile.air" || fail "CleanShot X Air manifest is missing"
   rg -qx 'cask "fastmail"' "$ROOT/config/Brewfile.air" || fail "Fastmail Air manifest is missing"
   rg -qx 'cask "microsoft-teams"' "$ROOT/config/Brewfile.air" || fail "Microsoft Teams Air manifest is missing"
-  rg -qx 'brew "starship"' "$ROOT/config/Brewfile.air" || fail "Starship Air formula is missing"
-  for shell_formula in bat fd fzf pngpaste ripgrep zoxide zsh-autosuggestions zsh-syntax-highlighting; do
-    rg -qx "brew \"$shell_formula\"" "$ROOT/config/Brewfile.air" \
-      || fail "$shell_formula Air formula is missing"
+  rg -qx 'brew "starship"' "$ROOT/config/Brewfile.common" || fail "Starship common formula is missing"
+  rg -qx 'brew "pngpaste"' "$ROOT/config/Brewfile.air" || fail "pngpaste Air formula is missing"
+  for shell_formula in bat fd fzf ripgrep zoxide zsh-autosuggestions zsh-syntax-highlighting; do
+    rg -qx "brew \"$shell_formula\"" "$ROOT/config/Brewfile.common" \
+      || fail "$shell_formula common formula is missing"
   done
   rg -Fq 'shell-integration-features = ssh-env,ssh-terminfo' \
     "$ROOT/config/ghostty/mac-bootstrap.conf" || fail "Ghostty SSH integration is missing"
@@ -44,13 +45,13 @@ main() {
   rg -Fq 'config/zsh/air.zsh' \
     "$ROOT/bootstrap/starship.sh" || fail "Air zsh configuration is not installed"
   rg -Fq 'source <(fzf --zsh)' \
-    "$ROOT/config/zsh/air.zsh" || fail "fzf zsh integration is missing"
+    "$ROOT/config/zsh/common.zsh" || fail "fzf zsh integration is missing"
   rg -Fq 'eval "$(zoxide init zsh)"' \
-    "$ROOT/config/zsh/air.zsh" || fail "zoxide zsh integration is missing"
+    "$ROOT/config/zsh/common.zsh" || fail "zoxide zsh integration is missing"
   rg -Fq 'zsh-autosuggestions.zsh' \
-    "$ROOT/config/zsh/air.zsh" || fail "zsh autosuggestions are not loaded"
+    "$ROOT/config/zsh/common.zsh" || fail "zsh autosuggestions are not loaded"
   rg -Fq 'zsh-syntax-highlighting.zsh' \
-    "$ROOT/config/zsh/air.zsh" || fail "zsh syntax highlighting is not loaded"
+    "$ROOT/config/zsh/common.zsh" || fail "zsh syntax highlighting is not loaded"
   rg -Fqx 'work-dev() {' \
     "$ROOT/config/zsh/air.zsh" || fail "work development VM function is missing"
   rg -Fqx '  ssh -t work-dev "tmux new -As ${(q)session}"' \

@@ -126,6 +126,27 @@ forwards; review the effective configuration during commissioning.
 Usernames, Tailscale account names, private keys and host trust remain local.
 Bootstrap never creates keys, modifies authorised keys or accepts host keys.
 
+## Shell experience on the minis
+
+Use `ssh work-mini` or `ssh personal-mini` for the macOS host shell. Apply the
+matching mini profile as the macOS account used for SSH, then reconnect with
+an interactive zsh session. Both minis receive the same Starship prompt,
+autosuggestions, syntax highlighting, tab completion, fzf bindings, bat
+previews and zoxide navigation as the Air. Suggestions and navigation use
+each machine's own history; bootstrap does not copy history or credentials.
+
+Ghostty runs on the Air, so its Catppuccin theme, font and window preferences
+continue to apply to the terminal displaying the SSH session. Its managed
+[SSH integration](https://ghostty.org/docs/features/ssh) provides terminal
+environment and terminfo support. Ghostty itself is not installed on the minis.
+The Ubuntu shells reached through `work-dev` and `personal-dev` are configured
+by `dev-machine`.
+
+Both mini profiles install [1Password CLI](https://formulae.brew.sh/cask/1password-cli),
+available as `op`. Check installation with `op --version`. Sign-in and any
+1Password integration setup remain interactive on each mini, using only that
+mini's work or personal account.
+
 ## Images in remote Codex sessions
 
 Run `work-image` or `personal-image` on the Mac holding the clipboard, in a

@@ -38,7 +38,8 @@ bin/mac apply air --skip-app-store
 
 After signing into the store, rerun `bin/mac apply air` without that flag.
 
-`apply` installs the declared applications and Air configuration. It does not
+`apply` installs the declared applications, shared macOS shell configuration
+and profile-specific configuration. It does not
 sign into services, activate licences, grant permissions, enable Remote Login,
 create SSH keys, accept host keys, initialise TLS or create Ubuntu machines.
 Missing Air SSH settings produce a warning and leave SSH configuration alone;

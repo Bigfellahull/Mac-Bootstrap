@@ -1,2 +1,3 @@
 brew "mkcert"
 cask "orbstack"
+cask "1password-cli"

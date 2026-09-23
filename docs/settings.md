@@ -11,7 +11,12 @@ Air:
 - OpenSSH uses managed `work-mini`, `work-dev`, `personal-mini` and `personal-dev` aliases, with Tailscale jump-host routing configured from local settings. See [Air SSH access](remote-access.md).
 - Ghostty loads a managed fragment selecting Catppuccin Frappe in dark mode, Catppuccin Latte in light mode, and the declared window, cursor and background preferences.
 - Ghostty enables `ssh-env` and `ssh-terminfo` so clean remote machines receive compatible terminal metadata. Apply preserves configuration outside the managed fragment; verify is read-only.
-- Starship uses the shared prompt configuration for local zsh sessions. It is not installed on the minis.
+
+All Macs:
+
+- Starship uses the shared prompt configuration for interactive zsh sessions, including SSH sessions into the minis.
+- The managed shell fragment enables Homebrew paths, zsh completion, fzf bindings and completion, zoxide, bat previews, autosuggestions and syntax highlighting. Existing `.zshrc` content outside the managed block is preserved.
+- Shell history and navigation data stay local to each account and machine.
 
 ## Unmanaged settings
 
