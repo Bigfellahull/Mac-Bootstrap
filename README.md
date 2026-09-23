@@ -52,15 +52,16 @@ The Air receives the common applications plus:
 
 ### Personal mini
 
-The personal mini receives the common applications plus 1Password CLI and
-OrbStack. Support for an SSH-forwarded OrbStack Docker API bridge is available but disabled until a
-personal workload needs it. It also receives `mkcert` for commissioning a
+The personal mini receives the common applications plus 1Password CLI,
+CleanMyMac CLI and OrbStack. Support for an SSH-forwarded OrbStack Docker API
+bridge is available but disabled until a personal workload needs it. It also
+receives `mkcert` for commissioning a
 profile-specific local development CA and reusable VM server certificate.
 
 ### Work mini
 
-The work mini receives the common applications, 1Password CLI, OneDrive,
-OrbStack and Parallels Desktop.
+The work mini receives the common applications, 1Password CLI, CleanMyMac CLI,
+OneDrive, OrbStack and Parallels Desktop.
 Its profile expects a commissioned SSH-forwarded OrbStack Docker API bridge for
 development processes that need direct API access from the Ubuntu VM. It also
 receives `mkcert` for its own local development TLS authority.
@@ -133,7 +134,7 @@ without it after completing those installations.
 
 - Air: graphical client applications, SSH, Tailscale, Zed, Ghostty, Starship and
   focused command-line shell tools.
-- Minis: Tailscale, Remote Login, OrbStack, 1Password CLI and the shared shell tools.
+- Minis: Tailscale, Remote Login, OrbStack, 1Password CLI, CleanMyMac CLI and the shared shell tools.
 - Work mini: an SSH-forwarded OrbStack Docker API bridge, commissioned with a
   dedicated VM key.
 - Work mini: Parallels is independent of OrbStack provisioning.

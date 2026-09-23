@@ -147,6 +147,11 @@ available as `op`. Check installation with `op --version`. Sign-in and any
 1Password integration setup remain interactive on each mini, using only that
 mini's work or personal account.
 
+Both mini profiles also install
+[CleanMyMac CLI](https://formulae.brew.sh/cask/cleanmymac-cli), available as
+`cleanmymac` or `cmm`. Check installation with `cleanmymac --version`.
+Cleanup remains an operator action; bootstrap only installs the tool.
+
 ## Images in remote Codex sessions
 
 Run `work-image` or `personal-image` on the Mac holding the clipboard, in a
