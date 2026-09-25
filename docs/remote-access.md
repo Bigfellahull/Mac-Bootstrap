@@ -28,7 +28,8 @@ and [OrbStack SSH access](https://docs.orbstack.dev/machines/ssh).
 
 ## Local settings
 
-Create the Air's settings file outside the repository:
+On the Air, run these commands from the `Mac-Bootstrap` checkout to create the
+settings file outside the repository:
 
 ```bash
 mkdir -p ~/.config/mac-bootstrap
@@ -75,56 +76,212 @@ forwards; review the effective configuration during commissioning.
 
 ## Authentication and commissioning
 
-1. Sign into Tailscale on all three Macs and confirm the minis have distinct,
-   stable names. Enable macOS Remote Login for only the intended account on
-   each mini. Start OrbStack and provision the matching Ubuntu machine through
-   `dev-machine`.
-2. Create separate passphrase-protected Air keys at
-   `~/.ssh/work-mini_ed25519` and `~/.ssh/personal-mini_ed25519`. Never reuse one
-   key for both roles, or copy a mini's generated OrbStack private key to the
-   Air. Key generation remains manual.
+Run Air commands in a local terminal on the Air. Run mini commands in macOS
+Terminal on the matching mini, signed in as the account used for Remote Login
+and OrbStack. These steps do not run inside Ubuntu.
 
-   For new keys, run these commands on the Air and choose a passphrase for each:
+### 1. Prepare the Macs
 
-   ```bash
-   mkdir -p ~/.ssh
-   ssh-keygen -t ed25519 -f ~/.ssh/work-mini_ed25519 -C air-work-mini
-   ssh-keygen -t ed25519 -f ~/.ssh/personal-mini_ed25519 -C air-personal-mini
-   ```
+Sign into Tailscale on all three Macs and confirm the minis have distinct,
+stable names. On each mini, open System Settings > General > Sharing > Remote
+Login and allow only the intended macOS account. Start OrbStack and provision
+the matching Ubuntu machine through `dev-machine`.
 
-   If either file already exists, inspect it and decide whether to reuse that
-   role's key; do not overwrite it as part of routine commissioning.
-3. On each mini, authorise only its corresponding Air public key in the intended
-   macOS account's `~/.ssh/authorized_keys` and
-   `~/.orbstack/ssh/authorized_keys`. Preserve existing entries. Restart OrbStack
-   after changing its authorised keys, as its documentation requires. Keep
-   these Air access keys separate from the VM's Docker API bridge key.
-   Transfer the contents of the matching `.pub` file, never the private key.
-4. Apply the Air SSH configuration, then inspect all four effective aliases:
+### 2. Create the Air keys
 
-   ```bash
-   ssh -G work-mini
-   ssh -G work-dev
-   ssh -G personal-mini
-   ssh -G personal-dev
-   ```
+On the Air, create separate passphrase-protected keys for work and personal:
 
-   Check the mini's full Tailscale name, users, jump host, identity file and VM
-   host-key alias. Each role must use only its own identity. If existing global
-   SSH settings add other identities or forwards, exclude the managed aliases
-   from those settings manually. These commands evaluate the user's full SSH
-   configuration, including any user-defined `Match exec` commands.
-5. Verify each host fingerprint through trusted access to the corresponding
-   mini before accepting SSH host-key prompts. Test `ssh work-mini`,
-   `ssh work-dev`, `ssh personal-mini` and `ssh personal-dev`. Repeat VM access
-   on the LAN and from another network.
-6. Use `ssh work-dev` or `ssh personal-dev` in Zed. In Ghostty, the `work-dev`
-   and `personal-dev` shell helpers attach to tmux; an optional argument selects
-   a session. `work-devs` and `personal-devs` list sessions. TablePlus connects
-   through the mini aliases as described in [database access](tableplus.md).
+```bash
+mkdir -p ~/.ssh
+chmod 700 ~/.ssh
+ssh-keygen -t ed25519 -f ~/.ssh/work-mini_ed25519 -C air-work-mini
+ssh-keygen -t ed25519 -f ~/.ssh/personal-mini_ed25519 -C air-personal-mini
+```
+
+Run each `ssh-keygen` command separately and choose a passphrase when prompted.
+If either key already exists, inspect it and decide whether to reuse that
+role's key; do not overwrite it as part of routine commissioning. Never reuse
+one key for both roles or copy a mini's generated OrbStack private key to the
+Air. The passphrase protects the private key on disk; Keychain setup below
+avoids typing it for every connection.
+
+### 3. Authorise each public key on its mini
+
+On the Air, display the personal public key:
+
+```bash
+cat ~/.ssh/personal-mini_ed25519.pub
+```
+
+Copy the entire line beginning `ssh-ed25519`, including the final comment.
+Transfer only the `.pub` contents. The private key stays on the Air.
+
+On the personal mini, in the intended macOS account, prepare both files:
+
+```bash
+mkdir -p ~/.ssh ~/.orbstack/ssh
+chmod 700 ~/.ssh ~/.orbstack/ssh
+touch ~/.ssh/authorized_keys ~/.orbstack/ssh/authorized_keys
+chmod 600 ~/.ssh/authorized_keys ~/.orbstack/ssh/authorized_keys
+```
+
+These commands preserve existing entries. Open the macOS authorisation file:
+
+```bash
+nano ~/.ssh/authorized_keys
+```
+
+Paste the public key on a new line, leaving existing entries intact. Each key
+must occupy one line, even if the editor visually wraps it. If the key is
+already present, do not add it again. Save with **Ctrl+O**, then **Enter**;
+exit with **Ctrl+X**.
+
+Open the OrbStack authorisation file and add the same public key:
+
+```bash
+nano ~/.orbstack/ssh/authorized_keys
+```
+
+Save and exit in the same way. The first file permits the macOS jump-host
+connection; the second permits the connection to OrbStack's SSH service.
+Restart OrbStack on the mini after editing its authorised keys, as required
+by the [OrbStack SSH documentation](https://docs.orbstack.dev/machines/ssh#authentication).
+
+For the work mini, display the work public key on the Air:
+
+```bash
+cat ~/.ssh/work-mini_ed25519.pub
+```
+
+Repeat the mini commands and editing steps on the work mini using that key.
+The destination paths are the same on both minis. Authorise only the matching
+Air key on each mini, and keep these access keys separate from the VM's Docker
+API bridge key.
+
+### 4. Apply the Air routes and remember passphrases
+
+On the Air, complete the [local settings](#local-settings), then run these
+commands from the `Mac-Bootstrap` checkout:
+
+```bash
+bootstrap/ssh.sh apply air
+bootstrap/ssh.sh verify air
+```
+
+To remember the key passphrases, open the Air's SSH configuration:
+
+```bash
+nano ~/.ssh/config
+```
+
+Add the following block immediately after
+`# mac-bootstrap: end managed Air SSH routing`, before any other host settings.
+Keep it outside the managed block; do not edit `~/.ssh/mac-bootstrap/air.conf`.
+
+```sshconfig
+Host work-mini work-dev personal-mini personal-dev
+  AddKeysToAgent yes
+  UseKeychain yes
+
+Host *
+```
+
+The final `Host *` ends the scope of these settings so subsequent configuration
+keeps its original scope. Save with **Ctrl+O**, **Enter**, then **Ctrl+X**.
+Bootstrap preserves this block when routes are reapplied.
+
+On the Air, run each command and enter the corresponding key's passphrase:
+
+```bash
+/usr/bin/ssh-add --apple-use-keychain ~/.ssh/personal-mini_ed25519
+/usr/bin/ssh-add --apple-use-keychain ~/.ssh/work-mini_ed25519
+```
+
+These commands load the keys into the Air's SSH agent and store their
+passphrases in its login Keychain. With Keychain unlocked, later connections
+can load the keys without repeated passphrase prompts. The private keys remain
+passphrase-protected on disk. See
+[Apple's SSH Keychain and agent guidance](https://developer.apple.com/library/archive/technotes/tn2449/_index.html).
+
+A VM connection authenticates twice: first to the mini's macOS account, then
+to OrbStack. Without a loaded key or Keychain access, both connections may ask
+for the same passphrase. Both SSH clients run on the Air; agent forwarding to
+the mini is not needed. The tmux helpers use these same SSH settings.
+
+To check which keys are loaded on the Air:
+
+```bash
+/usr/bin/ssh-add -l
+```
+
+### 5. Verify the connections
+
+On the Air, inspect all four effective aliases:
+
+```bash
+ssh -G work-mini
+ssh -G work-dev
+ssh -G personal-mini
+ssh -G personal-dev
+```
+
+Check the mini's full Tailscale name, users, jump host, identity file and VM
+host-key alias. Each role must use only its own identity. If existing global
+SSH settings add other identities or forwards, exclude the managed aliases
+from those settings manually. These commands evaluate the user's full SSH
+configuration, including any user-defined `Match exec` commands.
+
+Verify each host fingerprint through trusted access to the corresponding mini
+before accepting SSH host-key prompts. Then test these commands from the Air,
+one at a time. Run `exit` in each remote shell to return to the Air before
+testing the next connection:
+
+```bash
+ssh personal-mini
+ssh personal-dev
+ssh work-mini
+ssh work-dev
+```
+
+Repeat VM access on the LAN and from another network. Use `ssh work-dev` or
+`ssh personal-dev` in Zed. TablePlus connects through the mini aliases as
+described in [database access](tableplus.md).
 
 Usernames, Tailscale account names, private keys and host trust remain local.
 Bootstrap never creates keys, modifies authorised keys or accepts host keys.
+
+## tmux helpers on the Air
+
+The Air profile installs the helpers. From the `Mac-Bootstrap` checkout on the
+Air, apply the profile if needed:
+
+```bash
+bin/mac apply air
+```
+
+Open a new Ghostty tab with a local zsh session on the Air. Choose the command
+for the destination and session you want:
+
+| Action | Personal VM | Work VM |
+|---|---|---|
+| Create or attach to the default `dev` session | `personal-dev` | `work-dev` |
+| Create or attach to a named session | `personal-dev my-session` | `work-dev my-session` |
+| List existing sessions | `personal-devs` | `work-devs` |
+
+For example, connect to the personal VM's default session:
+
+```bash
+personal-dev
+```
+
+With the default tmux key bindings, press **Ctrl+B**, release both keys, then
+press **D** to detach and return to the Air. The session keeps running in the
+VM. Run `personal-dev` again to reattach. VM restarts end its tmux sessions.
+
+The helpers use the SSH aliases and the Air's Keychain settings above, so they
+do not require separate keys or passphrase setup. If a helper is not recognised
+after applying the profile, open a new local terminal tab on the Air. Session
+listing may report no server running until the first session has been created.
 
 ## Shell experience on the minis
 

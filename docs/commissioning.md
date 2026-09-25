@@ -138,8 +138,11 @@ alone cannot enable a personal bridge.
 - Apply and verify the routes with `bootstrap/ssh.sh apply air` and
   `bootstrap/ssh.sh verify air`. Both mini destinations must be present in the
   local settings, even if one is temporarily offline.
-- Configure Zed and Ghostty to use `work-dev` and `personal-dev`. Check default
-  and named tmux sessions, plus `work-devs` and `personal-devs` session listings.
+- Follow the [Keychain setup](remote-access.md#4-apply-the-air-routes-and-remember-passphrases)
+  on the Air to load both keys and avoid repeated passphrase prompts.
+- Configure Zed and Ghostty to use `work-dev` and `personal-dev`. Test the
+  [tmux helpers](remote-access.md#tmux-helpers-on-the-air) with default and named
+  sessions, plus `work-devs` and `personal-devs` session listings.
 - Configure [TablePlus database tunnels](tableplus.md) through the mini aliases.
 - Connect to the work mini's [OneDrive share](onedrive.md#connect-from-the-air)
   in Finder and test file access and cloud synchronisation.
