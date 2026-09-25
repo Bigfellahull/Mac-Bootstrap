@@ -27,6 +27,7 @@ main() {
   rg -qx 'brew "mkcert"' "$ROOT/config/Brewfile.mini" || fail "mkcert mini manifest is missing"
   rg -qx 'cask "parallels"' "$ROOT/config/Brewfile.work-mini" || fail "Parallels work manifest is missing"
   rg -qx 'cask "tableplus"' "$ROOT/config/Brewfile.air" || fail "TablePlus Air manifest is missing"
+  rg -qx 'cask "chatgpt"' "$ROOT/config/Brewfile.air" || fail "ChatGPT Air manifest is missing"
   rg -qx 'cask "cleanshot"' "$ROOT/config/Brewfile.air" || fail "CleanShot X Air manifest is missing"
   rg -qx 'cask "fastmail"' "$ROOT/config/Brewfile.air" || fail "Fastmail Air manifest is missing"
   rg -qx 'cask "microsoft-teams"' "$ROOT/config/Brewfile.air" || fail "Microsoft Teams Air manifest is missing"

@@ -3,6 +3,7 @@ brew "pngpaste"
 
 cask "alcove"
 cask "backdrop"
+cask "chatgpt"
 cask "cleanshot"
 cask "discord"
 cask "fastmail"

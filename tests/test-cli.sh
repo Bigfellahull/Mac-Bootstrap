@@ -46,6 +46,7 @@ main() {
   air="$("$ROOT/bin/mac" plan air)"
   assert_contains "$air" 'cask "tableplus"'
   assert_contains "$air" 'cask "alcove"'
+  assert_contains "$air" 'cask "chatgpt"'
   assert_contains "$air" 'cask "cleanshot"'
   assert_contains "$air" 'cask "fastmail"'
   assert_contains "$air" 'cask "microsoft-teams"'
@@ -79,6 +80,7 @@ main() {
   assert_contains "$personal" 'cask "orbstack"'
   assert_not_contains "$personal" 'tableplus'
   assert_not_contains "$personal" 'fastmail'
+  assert_not_contains "$personal" 'chatgpt'
   assert_not_contains "$personal" 'parallels'
   assert_not_contains "$personal" 'shell-integration-features'
   assert_contains "$personal" 'brew "starship"'
@@ -105,6 +107,7 @@ main() {
   assert_contains "$work" 'bin/local-dev-tls init work-mini'
   assert_not_contains "$work" 'tableplus'
   assert_not_contains "$work" 'fastmail'
+  assert_not_contains "$work" 'chatgpt'
   assert_contains "$work" 'brew "starship"'
   assert_contains "$work" 'cask "1password-cli"'
   assert_contains "$work" 'Managed Starship and zsh configuration:'

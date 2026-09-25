@@ -35,6 +35,7 @@ The Air receives the common applications plus:
 
 - Alcove
 - Backdrop
+- ChatGPT
 - CleanShot X
 - Discord
 - Dropover
