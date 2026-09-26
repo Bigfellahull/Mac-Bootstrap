@@ -25,5 +25,6 @@ personal-image() {
   "$HOME/.config/mac-bootstrap/dev-image" "${1-send}" personal-dev "${@:2}"
 }
 
-alias work-devs='ssh work-dev "tmux ls"'
-alias personal-devs='ssh personal-dev "tmux ls"'
+# Bypass terminal SSH wrappers for one-shot commands to avoid setup replay.
+alias work-devs='command ssh work-dev "tmux ls"'
+alias personal-devs='command ssh personal-dev "tmux ls"'

@@ -61,9 +61,9 @@ main() {
     "$ROOT/config/zsh/air.zsh" || fail "personal development VM function is missing"
   rg -Fqx '  ssh -t personal-dev "tmux new -As ${(q)session}"' \
     "$ROOT/config/zsh/air.zsh" || fail "personal development VM function is incorrect"
-  rg -Fqx "alias work-devs='ssh work-dev \"tmux ls\"'" \
+  rg -Fqx "alias work-devs='command ssh work-dev \"tmux ls\"'" \
     "$ROOT/config/zsh/air.zsh" || fail "work development session-list alias is missing"
-  rg -Fqx "alias personal-devs='ssh personal-dev \"tmux ls\"'" \
+  rg -Fqx "alias personal-devs='command ssh personal-dev \"tmux ls\"'" \
     "$ROOT/config/zsh/air.zsh" || fail "personal development session-list alias is missing"
   rg -qx 'MAC_ORBSTACK_API_BRIDGE=disabled' \
     "$ROOT/profiles/work-mini.env" || fail "work OrbStack API bridge is not disabled by default"

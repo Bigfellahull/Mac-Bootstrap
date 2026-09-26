@@ -7,6 +7,7 @@ source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/lib.sh"
 
 config_source="$MAC_BOOTSTRAP_ROOT/config/starship.toml"
 config_target="$HOME/.config/starship.toml"
+cache_directories=("$HOME/.cache" "$HOME/.cache/starship")
 managed_zsh_sources=("$MAC_BOOTSTRAP_ROOT/config/zsh/common.zsh")
 managed_zsh_targets=("$HOME/.config/mac-bootstrap/common.zsh")
 image_helper_source="$MAC_BOOTSTRAP_ROOT/bin/dev-image"
@@ -40,6 +41,41 @@ validate_regular_target() {
   if [[ -e "$target_file" && ! -f "$target_file" ]]; then
     die "Shell configuration is not a regular file: $target_file"
   fi
+}
+
+validate_cache_targets() {
+  local directory
+
+  for directory in "${cache_directories[@]}"; do
+    path_has_no_symlinked_home_components "$directory" || return 1
+    if [[ -e "$directory" ]]; then
+      [[ -d "$directory" && -O "$directory" ]] || return 1
+    fi
+  done
+}
+
+apply_cache_permissions() {
+  local directory
+
+  for directory in "${cache_directories[@]}"; do
+    if [[ ! -d "$directory" ]]; then
+      (umask 022; mkdir "$directory")
+    fi
+    # Preserve stricter permissions and leave cache contents untouched.
+    chmod u+rwx,go-w "$directory"
+  done
+}
+
+verify_cache_permissions() {
+  local directory
+  local mode
+
+  validate_cache_targets || return 1
+  for directory in "${cache_directories[@]}"; do
+    [[ -d "$directory" ]] || return 1
+    mode="$(stat -f '%Lp' "$directory")"
+    (( (8#$mode & 022) == 0 && (8#$mode & 0700) == 0700 )) || return 1
+  done
 }
 
 render_zsh_config() {
@@ -96,6 +132,7 @@ prepare_zsh_config() {
 apply_config() {
   local index
 
+  validate_cache_targets || die "Cache directories must be owned by the current user and must not be symlinks. Check ~/.cache and ~/.cache/starship."
   validate_regular_target "$config_target"
   for index in "${!managed_zsh_targets[@]}"; do
     validate_regular_target "${managed_zsh_targets[$index]}"
@@ -109,6 +146,7 @@ apply_config() {
   prepare_zsh_config "$(dirname "$zsh_config")" \
     || die "Existing zsh configuration is invalid or has an incomplete managed block."
 
+  apply_cache_permissions
   mkdir -p "$(dirname "$config_target")" "$HOME/.config/mac-bootstrap"
   if [[ ! -f "$config_target" ]] || ! cmp -s "$config_source" "$config_target"; then
     install -m 0644 "$config_source" "$config_target"
@@ -142,6 +180,7 @@ apply_config() {
 verify_config() {
   local index
 
+  verify_cache_permissions || return 1
   [[ -f "$config_target" && ! -L "$config_target" ]] || return 1
   [[ -f "$zsh_config" && ! -L "$zsh_config" ]] || return 1
   if [[ "$MAC_PROFILE_KIND" == air ]]; then
@@ -178,6 +217,7 @@ main() {
   case "$command" in
     plan)
       printf '\nManaged Starship and zsh configuration:\n'
+      printf '%s: ensure owner access and remove group/other write permissions (non-recursive)\n' "${cache_directories[@]}"
       printf '%s <- %s\n' "$config_target" "$config_source"
       for index in "${!managed_zsh_targets[@]}"; do
         printf '%s <- %s\n' "${managed_zsh_targets[$index]}" "${managed_zsh_sources[$index]}"

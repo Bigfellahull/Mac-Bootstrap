@@ -190,7 +190,12 @@ The bootstrap manages only explicitly declared macOS settings. The Air profile
 manages Ghostty's Catppuccin light/dark preferences, SSH environment and
 terminfo integration. All profiles manage a shared Starship prompt, zsh
 completion, autosuggestions, syntax highlighting, fzf and zoxide for local
-and SSH zsh sessions. Development VM helpers belong to the Air profile.
+and SSH zsh sessions. Apply creates `~/.cache` and `~/.cache/starship` with
+mode `755` when missing, ensures owner access, and removes group/other write
+permissions from these directories. Stricter existing permissions and all cache
+contents are preserved; verification checks the directory permissions. Symlinked
+or differently owned cache directories require manual review.
+Development VM helpers belong to the Air profile.
 Ubuntu Bash and tmux prompt configuration belongs to `dev-machine`. Dock,
 Finder, keyboard, trackpad, screenshot, power and Remote Login settings remain
 operator-controlled as

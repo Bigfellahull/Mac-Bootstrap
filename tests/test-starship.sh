@@ -63,6 +63,37 @@ main() {
   [[ "$(grep -Fc "$source_line" "$new_home/.zshrc")" -eq 1 ]] || \
     fail "managed zsh source line was duplicated"
 
+  [[ "$(stat -f '%Lp' "$new_home/.cache")" == 755 &&
+     "$(stat -f '%Lp' "$new_home/.cache/starship")" == 755 ]] || \
+    fail "new cache directories have incorrect permissions"
+  printf 'keep\n' > "$new_home/.cache/starship/existing.log"
+  chmod 666 "$new_home/.cache/starship/existing.log"
+  chmod 777 "$new_home/.cache" "$new_home/.cache/starship"
+  if HOME="$new_home" "$ROOT/bootstrap/starship.sh" verify air; then
+    fail "writable cache directories were accepted"
+  fi
+  HOME="$new_home" "$ROOT/bootstrap/starship.sh" apply air >/dev/null
+  HOME="$new_home" "$ROOT/bootstrap/starship.sh" verify air || fail "cache permissions were not repaired"
+  [[ "$(stat -f '%Lp' "$new_home/.cache")" == 755 &&
+     "$(stat -f '%Lp' "$new_home/.cache/starship")" == 755 ]] || fail "cache repair failed"
+  [[ "$(stat -f '%Lp' "$new_home/.cache/starship/existing.log")" == 666 ]] || \
+    fail "cache contents permissions were changed"
+  chmod 700 "$new_home/.cache" "$new_home/.cache/starship"
+  HOME="$new_home" "$ROOT/bootstrap/starship.sh" apply air >/dev/null
+  HOME="$new_home" "$ROOT/bootstrap/starship.sh" verify air || fail "private cache directories did not verify"
+  [[ "$(stat -f '%Lp' "$new_home/.cache")" == 700 &&
+     "$(stat -f '%Lp' "$new_home/.cache/starship")" == 700 ]] || fail "private cache permissions were widened"
+  mv "$new_home/.cache" "$new_home/cache-original"
+  ln -s "$new_home/cache-original" "$new_home/.cache"
+  if HOME="$new_home" "$ROOT/bootstrap/starship.sh" apply air >/dev/null 2>&1; then
+    fail "symlinked cache directory was accepted"
+  fi
+  if HOME="$new_home" "$ROOT/bootstrap/starship.sh" verify air; then
+    fail "symlinked cache directory verified"
+  fi
+  rm "$new_home/.cache"
+  mv "$new_home/cache-original" "$new_home/.cache"
+
   actual="$(HOME="$new_home" zsh -fc '
     ssh() { printf "%s\n" "$@"; }
     source "$HOME/.config/mac-bootstrap/air.zsh"
@@ -79,8 +110,14 @@ main() {
   [[ "$actual" == $'-t\npersonal-dev\ntmux new -As dev' ]] || \
     fail "personal development VM function did not use the default session"
 
-  actual="$(HOME="$new_home" zsh -fc '
-    ssh() { printf "%s\n" "$@"; }
+  mkdir -p "$test_directory/mock-bin"
+  cat > "$test_directory/mock-bin/ssh" <<'EOF'
+#!/bin/sh
+printf '%s\n' "$@"
+EOF
+  chmod +x "$test_directory/mock-bin/ssh"
+  actual="$(HOME="$new_home" PATH="$test_directory/mock-bin:$PATH" zsh -fc '
+    ssh() { print -u2 "unexpected SSH wrapper invocation"; return 1; }
     source "$HOME/.config/mac-bootstrap/air.zsh"
     eval work-devs
     eval personal-devs

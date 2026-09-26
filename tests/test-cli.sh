@@ -62,8 +62,8 @@ main() {
   assert_contains "$air" "ssh -t work-dev $tmux_session_command"
   assert_contains "$air" 'personal-dev() {'
   assert_contains "$air" "ssh -t personal-dev $tmux_session_command"
-  assert_contains "$air" 'alias work-devs='"'"'ssh work-dev "tmux ls"'"'"''
-  assert_contains "$air" 'alias personal-devs='"'"'ssh personal-dev "tmux ls"'"'"''
+  assert_contains "$air" 'alias work-devs='"'"'command ssh work-dev "tmux ls"'"'"''
+  assert_contains "$air" 'alias personal-devs='"'"'command ssh personal-dev "tmux ls"'"'"''
   assert_contains "$air" 'Managed Air SSH routing:'
   assert_contains "$air" 'using Tailscale everywhere'
   assert_not_contains "$air" 'cask "1password-cli"'
