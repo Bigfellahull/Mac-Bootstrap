@@ -139,6 +139,11 @@ main() {
     else
       fail "Air SSH routing configuration"
     fi
+    if "$MAC_BOOTSTRAP_ROOT/bootstrap/mountain-duck.sh" verify "$profile"; then
+      pass "Mountain Duck bookmarks"
+    else
+      fail "Mountain Duck bookmarks"
+    fi
     if "$MAC_BOOTSTRAP_ROOT/bootstrap/ghostty.sh" verify "$profile"; then
       pass "Ghostty preferences and SSH integration"
     else

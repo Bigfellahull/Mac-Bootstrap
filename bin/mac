@@ -44,6 +44,7 @@ apply_profile() {
   "$MAC_BOOTSTRAP_ROOT/bootstrap/ghostty.sh" apply "$profile"
   "$MAC_BOOTSTRAP_ROOT/bootstrap/starship.sh" apply "$profile"
   "$MAC_BOOTSTRAP_ROOT/bootstrap/ssh.sh" apply "$profile"
+  "$MAC_BOOTSTRAP_ROOT/bootstrap/mountain-duck.sh" apply "$profile"
 
   if [[ "$option" != "--skip-app-store" ]]; then
     "$MAC_BOOTSTRAP_ROOT/bootstrap/app-store.sh" "$profile"

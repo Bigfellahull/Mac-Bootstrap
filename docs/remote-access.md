@@ -401,3 +401,10 @@ ACLs on the inspected SSH/settings paths. Inspect the reported path before
 retrying; bootstrap does not repair permissions or replace symlink targets.
 Keep the settings and managed files owned by the intended Air user. Incomplete
 or duplicate managed blocks in `~/.ssh/config` also require manual correction.
+
+## Finder access to VM files
+
+The Air profile installs Mountain Duck and creates work/personal SFTP bookmarks
+from the same local SSH settings. Follow [Mountain Duck commissioning](mountain-duck.md)
+for first connection, connection modes and Finder checks. The minis need no additional
+SMB share for this route.

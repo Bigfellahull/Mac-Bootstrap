@@ -47,6 +47,7 @@ The Air receives the common applications plus:
 - Microsoft Teams
 - Rectangle
 - SideNotes
+- [Mountain Duck](docs/mountain-duck.md) for VM files in Finder
 - TablePlus
 - Windows App
 - Zed

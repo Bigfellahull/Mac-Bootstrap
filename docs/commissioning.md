@@ -180,3 +180,9 @@ repair. Test representative development workflows, backups and restores using
 the `dev-machine` checklist. Do not rebuild a primary VM merely to check the
 documentation: its destructive recovery test requires important state to be
 saved elsewhere first.
+
+### VM file access from Finder
+
+After Air SSH commissioning, follow [Mountain Duck setup](mountain-duck.md).
+Quit Mountain Duck and Cyberduck before applying new bookmarks, then connect
+`work-dev` and `personal-dev` and verify a file transfer in each.

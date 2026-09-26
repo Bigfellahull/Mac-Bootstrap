@@ -8,6 +8,7 @@ test:
 	./tests/test-starship.sh
 	./tests/test-dev-image.sh
 	./tests/test-ssh.sh
+	./tests/test-mountain-duck.sh
 	./tests/test-local-dev-tls.sh
 	./tests/test-orbstack-docker-api.sh
 	./tests/test-static.sh
