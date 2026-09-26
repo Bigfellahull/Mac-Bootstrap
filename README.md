@@ -11,19 +11,16 @@ separately commissioned Parallels VM; see [Windows development](docs/windows-dev
 
 ## Start here
 
-Follow the [commissioning guide](docs/commissioning.md) for the complete order
-of work, including the manual steps before and after installation. Start with
-the minis before commissioning the Air connections; Air application installation
-can run independently.
+Follow the [end-to-end setup guide](docs/setup.md). It is the single ordered
+route from new Macs to working Ubuntu VMs, tools, certificates and Air clients.
+Every command block names its machine. Start with the personal mini, repeat for
+work, then connect the Air; Air application installation can run earlier.
 
-| Stage | Required action |
+| Document | Use it for |
 |---|---|
-| Before scripts | macOS setup, FileVault, Command Line Tools, Homebrew and the Air App Store sign-in |
-| Installation | Run the selected profile as the normal macOS user |
-| After scripts, all Macs | App sign-ins, licences, privacy/network permissions and Tailscale connectivity checks |
-| After scripts, minis | Remote Login, OrbStack, local TLS CA, Ubuntu provisioning and the work Docker API bridge |
-| After scripts, Air | Local SSH settings, separate keys, host trust, browser CA trust and client connections |
-| Final checks | Run the profile verifier, resolve commissioning warnings and test real connections |
+| [Step-by-step setup](docs/setup.md) | Initial installation or resuming an unfinished setup |
+| [Acceptance checklist](docs/commissioning.md) | Confirming the completed setup works |
+| Topic references below | Options, troubleshooting and maintenance |
 
 `apply` finishing successfully does not mean commissioning is complete.
 
@@ -64,7 +61,7 @@ profile-specific local development CA and reusable VM server certificate.
 
 The work mini receives the common applications, 1Password CLI, CleanMyMac CLI,
 OneDrive, OrbStack and Parallels Desktop.
-Its profile expects a commissioned SSH-forwarded OrbStack Docker API bridge for
+It can opt into an SSH-forwarded OrbStack Docker API bridge for
 development processes that need direct API access from the Ubuntu VM. It also
 receives `mkcert` for its own local development TLS authority.
 
@@ -104,7 +101,7 @@ bin/mac plan air
 bin/mac apply air
 ```
 
-Complete the applicable manual steps in the [commissioning guide](docs/commissioning.md), then run:
+Complete the remaining numbered steps in the [setup guide](docs/setup.md), then run:
 
 ```bash
 bin/mac verify air
@@ -128,7 +125,7 @@ request administrator approval.
 shell and profile configuration. It does not uninstall applications or request bundle cleanup;
 Homebrew can still perform its normal dependency and cache maintenance.
 `verify` reports missing state without changing it. None of these commands copies user data. Before
-commissioning, missing Air SSH settings, mini TLS state and the work bridge can
+commissioning, missing Air SSH settings, mini TLS state and an opted-in bridge can
 cause verification to fail. `--skip-app-store` skips only App Store checks; rerun
 without it after completing those installations.
 
@@ -137,7 +134,7 @@ without it after completing those installations.
 - Air: graphical client applications, SSH, Tailscale, Zed, Ghostty, Starship and
   focused command-line shell tools.
 - Minis: Tailscale, Remote Login, OrbStack, 1Password CLI, CleanMyMac CLI and the shared shell tools.
-- Work mini: an SSH-forwarded OrbStack Docker API bridge, commissioned with a
+- Either mini, optionally: an SSH-forwarded OrbStack Docker API bridge, commissioned with a
   dedicated VM key.
 - Work mini: Parallels is independent of OrbStack provisioning.
 - Minis: separate local development CAs; CA private keys never leave their
@@ -167,7 +164,7 @@ to the selected VM and copy an inspection prompt for pasting into Codex. Images 
 
 ## OrbStack Docker API bridge
 
-The work VM can reach the Mac's user-owned OrbStack socket through an encrypted
+An opted-in work or personal VM can reach the Mac's user-owned OrbStack socket through an encrypted
 SSH Unix-socket forward. This does not install a Docker daemon in Ubuntu or
 expose a Docker TCP port. Ordinary linked `docker` and `docker compose` commands
 do not need the bridge; it is for processes that consume the Docker API
@@ -200,6 +197,8 @@ operator-controlled as
 described in [`docs/settings.md`](docs/settings.md).
 
 ## Documentation
+
+- [End-to-end setup](docs/setup.md)
 
 - [Architecture](docs/architecture.md)
 - [Commissioning](docs/commissioning.md)

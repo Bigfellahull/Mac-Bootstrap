@@ -86,6 +86,21 @@ load_profile() {
     air:air|personal-mini:mini|work-mini:mini) ;;
     *) die "Profile $profile does not define its expected MAC_PROFILE_KIND." ;;
   esac
+  # A local data flag opts each mini in without editing shared profiles.
+  local bridge_flag="$HOME/.config/mac-bootstrap/docker-api-bridge.$profile"
+  if [[ "$MAC_PROFILE_KIND" == mini && ( -e "$bridge_flag" || -L "$bridge_flag" ) ]]; then
+    path_has_no_symlinked_home_components "$bridge_flag" \
+      && [[ -f "$bridge_flag" && -O "$bridge_flag" ]] \
+      || die "Unsafe Docker API opt-in file: $bridge_flag"
+    local bridge_mode
+    if [[ "$(uname -s)" == Darwin ]]; then
+      bridge_mode="$(stat -f '%Lp' "$bridge_flag")"
+    else
+      bridge_mode="$(stat -c '%a' "$bridge_flag")"
+    fi
+    [[ "$bridge_mode" == 600 ]] || die "Docker API opt-in file must have mode 600: $bridge_flag"
+    MAC_ORBSTACK_API_BRIDGE="$(cat "$bridge_flag")"
+  fi
   case "$MAC_ORBSTACK_API_BRIDGE" in
     enabled|disabled) ;;
     *) die "Profile $profile does not define a valid MAC_ORBSTACK_API_BRIDGE state." ;;

@@ -65,8 +65,8 @@ main() {
     "$ROOT/config/zsh/air.zsh" || fail "work development session-list alias is missing"
   rg -Fqx "alias personal-devs='ssh personal-dev \"tmux ls\"'" \
     "$ROOT/config/zsh/air.zsh" || fail "personal development session-list alias is missing"
-  rg -qx 'MAC_ORBSTACK_API_BRIDGE=enabled' \
-    "$ROOT/profiles/work-mini.env" || fail "work OrbStack API bridge is not enabled"
+  rg -qx 'MAC_ORBSTACK_API_BRIDGE=disabled' \
+    "$ROOT/profiles/work-mini.env" || fail "work OrbStack API bridge is not disabled by default"
   rg -qx 'MAC_ORBSTACK_API_BRIDGE=disabled' \
     "$ROOT/profiles/personal-mini.env" || fail "personal OrbStack API bridge is not disabled"
   for mini_profile in personal-mini work-mini; do

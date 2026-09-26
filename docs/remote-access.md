@@ -33,7 +33,9 @@ settings file outside the repository:
 
 ```bash
 mkdir -p ~/.config/mac-bootstrap
-cp config/ssh/air.tsv.example ~/.config/mac-bootstrap/ssh-air.tsv
+if [ ! -e ~/.config/mac-bootstrap/ssh-air.tsv ]; then
+  cp config/ssh/air.tsv.example ~/.config/mac-bootstrap/ssh-air.tsv
+fi
 chmod 600 ~/.config/mac-bootstrap/ssh-air.tsv
 ```
 
@@ -157,6 +159,36 @@ Repeat the mini commands and editing steps on the work mini using that key.
 The destination paths are the same on both minis. Authorise only the matching
 Air key on each mini, and keep these access keys separate from the VM's Docker
 API bridge key.
+
+### Which authorised-key entries belong where?
+
+These files control different SSH servers on the mini:
+
+| Key | `~/.ssh/authorized_keys` on mini | `~/.orbstack/ssh/authorized_keys` on mini | Purpose |
+|---|---|---|---|
+| Matching Air public key | Yes | Yes | Air → mini jump host → VM |
+| Mini's existing OrbStack-generated public key | Not required by this setup | Preserve the existing entry | Local OrbStack SSH access |
+| Opted-in VM's dedicated Docker API public key | Matching mini only, restricted entry | No | VM → matching mini Docker socket forward |
+
+An opted-in entry has the matching comment `orbstack-docker-api-work-mini` or
+`orbstack-docker-api-personal-mini` and the
+prefix `restrict,port-forwarding,command="/usr/bin/false"`. It blocks normal shell
+commands, PTYs and agent forwarding while allowing the socket tunnel. Docker
+API access still grants control of that mini's engine. Both profiles default to disabled. An entry is needed only on a mini whose
+bridge has been explicitly enabled and commissioned.
+
+An existing OrbStack entry may have no comment; do not remove it just because
+it is not labelled. Inspect fingerprints without displaying private keys:
+
+```bash
+ssh-keygen -lf ~/.ssh/authorized_keys
+ssh-keygen -lf ~/.orbstack/ssh/authorized_keys
+```
+
+Compare an entry to its source public key when auditing. Do not copy the whole
+file between minis or make work and personal files identical. The VM's Git
+provider key is separate again: its public key is authorised with the Git
+provider, not in either of these mini files.
 
 ### 4. Apply the Air routes and remember passphrases
 

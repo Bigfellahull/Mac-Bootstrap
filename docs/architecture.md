@@ -44,14 +44,14 @@ here.
 
 ## OrbStack Docker API bridge
 
-The work VM uses SSH Unix-socket forwarding when a development process needs
+An opted-in work or personal VM uses SSH Unix-socket forwarding when a development process needs
 direct access to the Docker API:
 
 ```text
 Ubuntu process
   -> user-owned runtime socket in Ubuntu
   -> encrypted SSH forwarding
-  -> ~/.orbstack/run/docker.sock on the work mini
+  -> ~/.orbstack/run/docker.sock on the matching mini
   -> OrbStack container
 
 Container callback
@@ -66,8 +66,9 @@ project owns any consumer-specific environment variables.
 
 The bridge implementation is generic rather than Testcontainers-specific.
 Testcontainers is one consumer; Docker SDKs and IDE integrations may use the
-same API path. The personal mini supports the same design but leaves it disabled
-until a workload requires it.
+same API path. Both profiles leave the bridge disabled until a workload requires it.
+Each side records its opt-in in a private local flag; commissioning keeps the
+work and personal keys separate.
 
 ## Local development TLS
 

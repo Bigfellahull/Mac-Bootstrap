@@ -92,7 +92,7 @@ main() {
   assert_not_contains "$personal" 'dev-image'
   assert_not_contains "$personal" 'cask "ghostty"'
   assert_contains "$personal" 'OrbStack Docker API bridge:'
-  assert_contains "$personal" 'state: disabled'
+  [[ "$personal" == *$'OrbStack Docker API bridge:\nstate: disabled'* ]] || fail 'personal bridge should default to disabled'
   assert_contains "$personal" 'Local development TLS:'
   assert_contains "$personal" 'bin/local-dev-tls init personal-mini'
 
@@ -101,8 +101,7 @@ main() {
   assert_contains "$work" 'cask "orbstack"'
   assert_contains "$work" 'cask "parallels"'
   assert_contains "$work" 'OrbStack Docker API bridge:'
-  assert_contains "$work" 'state: enabled'
-  assert_contains "$work" 'orbstack-docker-api-work-mini'
+  [[ "$work" == *$'OrbStack Docker API bridge:\nstate: disabled'* ]] || fail 'work bridge should default to disabled'
   assert_contains "$work" 'Local development TLS:'
   assert_contains "$work" 'bin/local-dev-tls init work-mini'
   assert_not_contains "$work" 'tableplus'

@@ -28,8 +28,7 @@ main() {
   local work_plan
 
   work_plan="$("$ROOT/bootstrap/orbstack-docker-api.sh" plan work-mini)"
-  grep -Fq 'state: enabled' <<<"$work_plan" || fail "work bridge is not enabled"
-  grep -Fq "$marker" <<<"$work_plan" || fail "work authorization marker is missing"
+  grep -Fq 'state: disabled' <<<"$work_plan" || fail "work bridge is not disabled by default"
 
   personal_plan="$("$ROOT/bootstrap/orbstack-docker-api.sh" plan personal-mini)"
   grep -Fq 'state: disabled' <<<"$personal_plan" || fail "personal bridge is not disabled"
@@ -44,6 +43,17 @@ main() {
 
   test_directory="$(mktemp -d "${TMPDIR:-/tmp}/mac-bootstrap-orbstack-api-test.XXXXXX")"
   HOME="$test_directory"
+  mkdir -p "$HOME/.config/mac-bootstrap"
+  for role in work-mini personal-mini; do
+    printf 'enabled\n' > "$HOME/.config/mac-bootstrap/docker-api-bridge.$role"
+    chmod 600 "$HOME/.config/mac-bootstrap/docker-api-bridge.$role"
+    plan="$(HOME="$HOME" "$ROOT/bootstrap/orbstack-docker-api.sh" plan "$role")"
+    grep -Fq 'state: enabled' <<<"$plan" || fail "$role opt-in ignored"
+    grep -Fq "orbstack-docker-api-$role" <<<"$plan" || fail "$role marker missing"
+    printf 'invalid\n' > "$HOME/.config/mac-bootstrap/docker-api-bridge.$role"
+    if HOME="$HOME" "$ROOT/bootstrap/orbstack-docker-api.sh" plan "$role" >/dev/null 2>&1; then fail "invalid policy accepted"; fi
+    rm "$HOME/.config/mac-bootstrap/docker-api-bridge.$role"
+  done
   authorized_keys="$test_directory/authorized_keys"
   ssh-keygen -q -t ed25519 -N '' -C bridge-test -f "$test_directory/bridge-key"
   public_key="$(awk '{ print $1, $2 }' "$test_directory/bridge-key.pub")"

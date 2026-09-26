@@ -5,13 +5,29 @@ Docker API without installing a Docker daemon in the VM or exposing a Docker
 TCP port. Ordinary linked `docker` and `docker compose` commands continue to
 work without it.
 
-The work-mini profile enables the host prerequisites. The personal-mini profile
-supports the same mechanism but leaves it disabled until a personal workload
-needs direct API access.
+Both mini profiles default to **disabled**. Opt in only when a VM workload
+needs direct Docker API access; PostgreSQL connections and `db` do not need it.
 
-The supplied `dev-machine` guest helper and service support work only. Personal
-use would require guest support as well as a reviewed host-profile change; leave
-it disabled with the supplied profiles.
+## Opt in
+
+On the matching mini, create a private, data-only flag. Use `personal-mini`
+instead of `work-mini` on personal:
+
+```bash
+mkdir -p ~/.config/mac-bootstrap
+(umask 077; printf 'enabled\n' > ~/.config/mac-bootstrap/docker-api-bridge.work-mini)
+chmod 600 ~/.config/mac-bootstrap/docker-api-bridge.work-mini
+```
+
+Missing flags mean disabled; only `enabled` and `disabled` are accepted.
+The file is local runtime configuration, not a tracked profile edit. Plan and
+verification read it on every invocation. Enabling does not create keys or
+change authorised-key files. Also opt in on the matching Ubuntu VM using the
+[guest guide](https://github.com/Bigfellahull/Dev-Machine/blob/main/docs/docker-api.md#opt-in).
+
+For an existing commissioned work bridge, create both opt-in files before
+applying the updated guest module. This preserves the existing key and service.
+No key rotation is necessary. Each enabled VM must have its own credentials.
 
 ## Ownership
 
@@ -77,7 +93,7 @@ authorization marker with `restrict`, `port-forwarding`, and a forced
 `/usr/bin/false` command, without re-enabling PTY, agent, X11 or user-rc access.
 Exactly one entry may carry the profile's marker, and that key must not appear
 elsewhere in `authorized_keys`. The supplied policy therefore commissions one
-VM bridge per mini. A work clone needs a deliberate authorisation handover;
+VM bridge per mini. A clone needs a deliberate authorisation handover;
 concurrent VM bridge keys require a separate host-policy change. A disabled mini
 profile requires its authorization marker to be absent. Either profile rejects
 an authorization marker belonging to the other mini.
@@ -120,3 +136,12 @@ cannot constrain `permitopen` to a Unix-socket destination. Re-enabling port
 forwarding therefore allows that key to request other forwards reachable by
 the Mac account. Protect it as a privileged credential, and remove its
 authorization when the bridge is no longer needed.
+
+## Disable deliberately
+
+Stop the guest service first (`orbstack-docker-api stop`). Revoke only its marked
+public-key entry in this mini's `~/.ssh/authorized_keys`; preserve Air and other
+SSH entries. On this mini, put `disabled` in the same mode-600 opt-in file (or
+remove that one flag file). Follow the guest guide to remove its managed service
+and retire the exact private credential directory. Verification rejects marked
+authorisation left on a disabled mini. It never silently revokes keys for you.
