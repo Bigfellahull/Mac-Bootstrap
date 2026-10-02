@@ -55,11 +55,11 @@ main() {
     "$ROOT/config/zsh/common.zsh" || fail "zsh syntax highlighting is not loaded"
   rg -Fqx 'work-dev() {' \
     "$ROOT/config/zsh/air.zsh" || fail "work development VM function is missing"
-  rg -Fqx '  ssh -t work-dev "tmux new -As ${(q)session}"' \
+  rg -Fqx '  _mac_bootstrap_tmux work-dev "${1:-dev}"' \
     "$ROOT/config/zsh/air.zsh" || fail "work development VM function is incorrect"
   rg -Fqx 'personal-dev() {' \
     "$ROOT/config/zsh/air.zsh" || fail "personal development VM function is missing"
-  rg -Fqx '  ssh -t personal-dev "tmux new -As ${(q)session}"' \
+  rg -Fqx '  _mac_bootstrap_tmux personal-dev "${1:-dev}"' \
     "$ROOT/config/zsh/air.zsh" || fail "personal development VM function is incorrect"
   rg -Fqx "alias work-devs='command ssh work-dev \"tmux ls\"'" \
     "$ROOT/config/zsh/air.zsh" || fail "work development session-list alias is missing"

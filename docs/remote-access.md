@@ -300,6 +300,28 @@ for the destination and session you want:
 | Create or attach to a named session | `personal-dev my-session` | `work-dev my-session` |
 | List existing sessions | `personal-devs` | `work-devs` |
 
+The connection helpers retry SSH failures after 2, 5, 10, then 15 seconds
+(capped at 15 seconds), allowing reattachment after laptop sleep or network
+changes. SSH keepalives detect an unresponsive connection; detection and network
+recovery can take time. Press Ctrl+C during the retry wait to cancel. While
+attached, Ctrl+C still goes to the remote application; detach with Ctrl+B then D
+to return to the Air without reconnecting.
+
+The initial connection creates or attaches to the named session. Recovery only
+attaches to that exact session: if the VM restarted or the session was removed,
+the helper stops rather than silently starting a replacement. Run the helper
+again explicitly to create a new session. SSH status 255 also covers authentication
+and configuration failures; read the SSH diagnostic and cancel retries to fix
+those errors. Other exit statuses stop immediately.
+
+After SSH exits, the helper restores terminal input settings, disables remote
+mouse/focus/paste reporting, restores the cursor, and leaves the alternate screen.
+It does not reset or clear terminal scrollback. The helpers bypass terminal SSH
+wrappers and connection multiplexing; both VMs must have the terminal's terminfo
+installed. The managed VM setup includes Ghostty terminfo. Ordinary `ssh` commands
+are unaffected. Reload `~/.config/mac-bootstrap/air.zsh` or open a new terminal
+after updating; an already-running connection keeps its previous behaviour.
+
 For example, connect to the personal VM's default session:
 
 ```bash

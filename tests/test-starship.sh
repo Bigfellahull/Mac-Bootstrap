@@ -95,19 +95,19 @@ main() {
   mv "$new_home/cache-original" "$new_home/.cache"
 
   actual="$(HOME="$new_home" zsh -fc '
-    ssh() { printf "%s\n" "$@"; }
     source "$HOME/.config/mac-bootstrap/air.zsh"
+    _mac_bootstrap_tmux() { printf "%s\n" "$@"; }
     work-dev "feature branch"
   ')"
-  [[ "$actual" == $'-t\nwork-dev\ntmux new -As feature\\ branch' ]] || \
+  [[ "$actual" == $'work-dev\nfeature branch' ]] || \
     fail "work development VM function did not quote the requested session"
 
   actual="$(HOME="$new_home" zsh -fc '
-    ssh() { printf "%s\n" "$@"; }
     source "$HOME/.config/mac-bootstrap/air.zsh"
+    _mac_bootstrap_tmux() { printf "%s\n" "$@"; }
     personal-dev
   ')"
-  [[ "$actual" == $'-t\npersonal-dev\ntmux new -As dev' ]] || \
+  [[ "$actual" == $'personal-dev\ndev' ]] || \
     fail "personal development VM function did not use the default session"
 
   mkdir -p "$test_directory/mock-bin"

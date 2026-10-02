@@ -31,14 +31,12 @@ main() {
   local air
   local personal
   local work
-  local tmux_session_command
 
   test_directory="$(mktemp -d "${TMPDIR:-/tmp}/mac-bootstrap-cli-test.XXXXXX")"
   trap 'rm -rf "$test_directory"' EXIT
 
   # The plan must preserve zsh's session-quoting expression literally.
   # shellcheck disable=SC2016
-  tmux_session_command='"tmux new -As ${(q)session}"'
 
   profiles="$("$ROOT/bin/mac" list)"
   [[ "$profiles" == $'air\npersonal-mini\nwork-mini' ]] || fail "profile list is incorrect"
@@ -59,9 +57,13 @@ main() {
   assert_contains "$air" 'theme = dark:Catppuccin Frappe,light:Catppuccin Latte'
   assert_contains "$air" 'Managed Starship and zsh configuration:'
   assert_contains "$air" 'work-dev() {'
-  assert_contains "$air" "ssh -t work-dev $tmux_session_command"
+  # Match the literal shell helper definition.
+  # shellcheck disable=SC2016
+  assert_contains "$air" '_mac_bootstrap_tmux work-dev "${1:-dev}"'
   assert_contains "$air" 'personal-dev() {'
-  assert_contains "$air" "ssh -t personal-dev $tmux_session_command"
+  # Match the literal shell helper definition.
+  # shellcheck disable=SC2016
+  assert_contains "$air" '_mac_bootstrap_tmux personal-dev "${1:-dev}"'
   assert_contains "$air" 'alias work-devs='"'"'command ssh work-dev "tmux ls"'"'"''
   assert_contains "$air" 'alias personal-devs='"'"'command ssh personal-dev "tmux ls"'"'"''
   assert_contains "$air" 'Managed Air SSH routing:'
